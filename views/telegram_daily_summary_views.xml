@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="telegram_daily_summary_view_list" model="ir.ui.view">
+        <field name="name">telegram.daily.summary.list</field>
+        <field name="model">telegram.daily.summary</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="summary_type" widget="badge"/>
+                <field name="schedule_time" widget="float_time"/>
+                <field name="last_sent"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="telegram_daily_summary_view_form" model="ir.ui.view">
+        <field name="name">telegram.daily.summary.form</field>
+        <field name="model">telegram.daily.summary</field>
+        <field name="arch" type="xml">
+            <form string="Daily Summary">
+                <header>
+                    <button name="action_send_now"
+                            type="object"
+                            string="Send Now"
+                            class="btn-primary"
+                            icon="fa-paper-plane"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Daily POS Summary"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Summary Configuration">
+                            <field name="summary_type" widget="radio"/>
+                            <field name="schedule_time" widget="float_time"/>
+                        </group>
+                        <group string="Telegram">
+                            <field name="chat_id" placeholder="Leave empty for default"/>
+                        </group>
+                    </group>
+
+                    <group string="Options">
+                        <group>
+                            <field name="include_top_products"/>
+                            <field name="top_products_count"
+                                   invisible="not include_top_products"/>
+                        </group>
+                        <group>
+                            <field name="include_payment_summary"/>
+                        </group>
+                    </group>
+
+                    <group string="Last Sent" invisible="not last_sent">
+                        <field name="last_sent"/>
+                    </group>
+
+                    <field name="sequence" invisible="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="telegram_daily_summary_action" model="ir.actions.act_window">
+        <field name="name">Daily Summaries</field>
+        <field name="res_model">telegram.daily.summary</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first daily summary!
+            </p>
+            <p>
+                Send automatic daily summaries of POS sales, orders, or invoices to Telegram.
+            </p>
+        </field>
+    </record>
+
+</odoo>

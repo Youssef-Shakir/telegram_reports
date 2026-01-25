@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_telegram_report_schedule_user,telegram.report.schedule.user,model_telegram_report_schedule,base.group_user,1,0,0,0
+access_telegram_report_schedule_manager,telegram.report.schedule.manager,model_telegram_report_schedule,base.group_system,1,1,1,1
+access_telegram_daily_summary_user,telegram.daily.summary.user,model_telegram_daily_summary,base.group_user,1,0,0,0
+access_telegram_daily_summary_manager,telegram.daily.summary.manager,model_telegram_daily_summary,base.group_system,1,1,1,1
+access_telegram_service_user,telegram.service.user,model_telegram_service,base.group_user,1,0,0,0

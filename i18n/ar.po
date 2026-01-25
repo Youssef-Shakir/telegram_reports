@@ -1,0 +1,220 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * telegram_reports
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: Yousif Shakir\n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_telegram_report_schedule
+msgid "Telegram Report Schedule"
+msgstr "جدولة تقارير تيليجرام"
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_telegram_service
+msgid "Telegram Service"
+msgstr "خدمة تيليجرام"
+
+#. module: telegram_reports
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_root
+msgid "Telegram Reports"
+msgstr "تقارير تيليجرام"
+
+#. module: telegram_reports
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_schedules
+msgid "Report Schedules"
+msgstr "جدولة التقارير"
+
+#. module: telegram_reports
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_config
+msgid "Configuration"
+msgstr "الإعدادات"
+
+#. module: telegram_reports
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_settings
+msgid "Settings"
+msgstr "الإعدادات"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__name
+msgid "Name"
+msgstr "الاسم"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__report_id
+msgid "Report"
+msgstr "التقرير"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_type
+msgid "Schedule"
+msgstr "الجدولة"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__manual
+msgid "Manual Only"
+msgstr "يدوي فقط"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__daily
+msgid "Daily"
+msgstr "يومي"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__weekly
+msgid "Weekly"
+msgstr "أسبوعي"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__monthly
+msgid "Monthly"
+msgstr "شهري"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_time
+msgid "Send Time"
+msgstr "وقت الإرسال"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_day_of_week
+msgid "Day of Week"
+msgstr "يوم الأسبوع"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_day_of_month
+msgid "Day of Month"
+msgstr "يوم الشهر"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__last_sent
+msgid "Last Sent"
+msgstr "آخر إرسال"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__next_scheduled
+msgid "Next Scheduled"
+msgstr "الموعد التالي"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__send_count
+msgid "Send Count"
+msgstr "عدد مرات الإرسال"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__chat_id
+msgid "Chat ID"
+msgstr "معرف المحادثة"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__caption_template
+msgid "Caption Template"
+msgstr "قالب التسمية التوضيحية"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__domain
+msgid "Filter Domain"
+msgstr "فلتر التصفية"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__limit_records
+msgid "Limit Records"
+msgstr "حد السجلات"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_bot_token
+msgid "Bot Token"
+msgstr "توكن البوت"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_default_chat_id
+msgid "Default Chat ID"
+msgstr "معرف المحادثة الافتراضي"
+
+#. module: telegram_reports
+msgid "Send Now"
+msgstr "إرسال الآن"
+
+#. module: telegram_reports
+msgid "Test Connection"
+msgstr "اختبار الاتصال"
+
+#. module: telegram_reports
+msgid "Configure Scheduled Reports"
+msgstr "إعداد التقارير المجدولة"
+
+#. module: telegram_reports
+msgid "Success"
+msgstr "نجاح"
+
+#. module: telegram_reports
+msgid "Report sent successfully to Telegram!"
+msgstr "تم إرسال التقرير بنجاح إلى تيليجرام!"
+
+#. module: telegram_reports
+msgid "No records found matching the filter criteria."
+msgstr "لم يتم العثور على سجلات تطابق معايير التصفية."
+
+#. module: telegram_reports
+msgid "Failed to send report. Check Telegram configuration."
+msgstr "فشل إرسال التقرير. تحقق من إعدادات تيليجرام."
+
+#. module: telegram_reports
+msgid "Bot token not configured"
+msgstr "لم يتم إعداد توكن البوت"
+
+#. module: telegram_reports
+msgid "Chat ID not configured"
+msgstr "لم يتم إعداد معرف المحادثة"
+
+#. module: telegram_reports
+msgid "Invalid bot token"
+msgstr "توكن البوت غير صالح"
+
+#. module: telegram_reports
+msgid "Connected successfully! Bot: @%s"
+msgstr "تم الاتصال بنجاح! البوت: @%s"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__0
+msgid "Monday"
+msgstr "الإثنين"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__1
+msgid "Tuesday"
+msgstr "الثلاثاء"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__2
+msgid "Wednesday"
+msgstr "الأربعاء"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__3
+msgid "Thursday"
+msgstr "الخميس"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__4
+msgid "Friday"
+msgstr "الجمعة"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__5
+msgid "Saturday"
+msgstr "السبت"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__6
+msgid "Sunday"
+msgstr "الأحد"

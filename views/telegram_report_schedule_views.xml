@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="telegram_report_schedule_view_list" model="ir.ui.view">
+        <field name="name">telegram.report.schedule.list</field>
+        <field name="model">telegram.report.schedule</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="report_id"/>
+                <field name="schedule_type" widget="badge"/>
+                <field name="next_scheduled"/>
+                <field name="last_sent"/>
+                <field name="send_count"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="telegram_report_schedule_view_form" model="ir.ui.view">
+        <field name="name">telegram.report.schedule.form</field>
+        <field name="model">telegram.report.schedule</field>
+        <field name="arch" type="xml">
+            <form string="Report Schedule">
+                <header>
+                    <button name="action_send_now"
+                            type="object"
+                            string="Send Now"
+                            class="btn-primary"
+                            icon="fa-paper-plane"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Daily Sales Report"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Report Configuration">
+                            <field name="report_id" options="{'no_create': True}"/>
+                            <field name="model_id" invisible="1"/>
+                            <field name="domain" placeholder="[]"/>
+                            <field name="limit_records"/>
+                        </group>
+                        <group string="Telegram Settings">
+                            <field name="chat_id" placeholder="Leave empty for default"/>
+                            <field name="caption_template"/>
+                        </group>
+                    </group>
+
+                    <group string="Schedule">
+                        <group>
+                            <field name="schedule_type" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="schedule_time" widget="float_time"
+                                   invisible="schedule_type == 'manual'"/>
+                            <field name="schedule_day_of_week"
+                                   invisible="schedule_type != 'weekly'"/>
+                            <field name="schedule_day_of_month"
+                                   invisible="schedule_type != 'monthly'"/>
+                        </group>
+                    </group>
+
+                    <group string="Statistics" invisible="send_count == 0">
+                        <group>
+                            <field name="last_sent"/>
+                            <field name="send_count"/>
+                        </group>
+                        <group>
+                            <field name="next_scheduled"/>
+                        </group>
+                    </group>
+
+                    <field name="sequence" invisible="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="telegram_report_schedule_view_search" model="ir.ui.view">
+        <field name="name">telegram.report.schedule.search</field>
+        <field name="model">telegram.report.schedule</field>
+        <field name="arch" type="xml">
+            <search string="Search Schedules">
+                <field name="name"/>
+                <field name="report_id"/>
+                <separator/>
+                <filter name="filter_active" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="filter_scheduled" string="Scheduled" domain="[('schedule_type', '!=', 'manual')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_schedule_type" string="Schedule Type" context="{'group_by': 'schedule_type'}"/>
+                    <filter name="group_report" string="Report" context="{'group_by': 'report_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="telegram_report_schedule_action" model="ir.actions.act_window">
+        <field name="name">Report Schedules</field>
+        <field name="res_model">telegram.report.schedule</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="telegram_report_schedule_view_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first scheduled report!
+            </p>
+            <p>
+                Configure which Odoo reports to automatically send via Telegram.
+            </p>
+        </field>
+    </record>
+
+</odoo>

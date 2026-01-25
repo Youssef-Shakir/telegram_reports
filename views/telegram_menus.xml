@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Main Menu -->
+    <menuitem id="telegram_reports_menu_root"
+              name="Telegram Reports"
+              web_icon="telegram_reports,static/description/icon.svg"
+              sequence="100"/>
+
+    <!-- Daily Summaries Menu -->
+    <menuitem id="telegram_reports_menu_daily"
+              name="Daily Summaries"
+              parent="telegram_reports_menu_root"
+              action="telegram_daily_summary_action"
+              sequence="5"/>
+
+    <!-- Report Schedules Menu -->
+    <menuitem id="telegram_reports_menu_schedules"
+              name="Report Schedules"
+              parent="telegram_reports_menu_root"
+              action="telegram_report_schedule_action"
+              sequence="10"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="telegram_reports_menu_config"
+              name="Configuration"
+              parent="telegram_reports_menu_root"
+              sequence="100"/>
+
+    <!-- Settings Action -->
+    <record id="telegram_reports_config_action" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'telegram_reports', 'bin_size': False}</field>
+    </record>
+
+    <menuitem id="telegram_reports_menu_settings"
+              name="Settings"
+              parent="telegram_reports_menu_config"
+              action="telegram_reports_config_action"
+              sequence="10"/>
+
+</odoo>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_telegram" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.telegram</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Telegram Reports" string="Telegram Reports" name="telegram_reports">
+                    <block title="Telegram Bot Configuration" name="telegram_bot_settings">
+                        <setting string="Bot Token" help="Get your bot token from @BotFather on Telegram">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="telegram_bot_token" class="col-lg-3"/>
+                                    <field name="telegram_bot_token" class="col-lg-6" password="True"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Default Chat ID" help="The default chat or group to send reports to">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="telegram_default_chat_id" class="col-lg-3"/>
+                                    <field name="telegram_default_chat_id" class="col-lg-6"/>
+                                </div>
+                                <div class="row mt8">
+                                    <div class="col-lg-12">
+                                        <button name="action_test_telegram_connection"
+                                                type="object"
+                                                string="Test Connection"
+                                                class="btn-primary"
+                                                icon="fa-paper-plane"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="POS Session Close" name="telegram_pos_settings">
+                        <setting string="Send on Session Close" help="Automatically send summary when POS session is closed">
+                            <field name="telegram_send_on_pos_close"/>
+                            <div class="content-group mt16" invisible="not telegram_send_on_pos_close">
+                                <div class="row">
+                                    <field name="telegram_pos_close_top_products"/>
+                                    <label for="telegram_pos_close_top_products"/>
+                                </div>
+                                <div class="row mt8" invisible="not telegram_pos_close_top_products">
+                                    <label for="telegram_pos_close_top_count" class="col-lg-4"/>
+                                    <field name="telegram_pos_close_top_count" class="col-lg-2"/>
+                                </div>
+                                <div class="row mt8">
+                                    <field name="telegram_pos_close_send_pdf"/>
+                                    <label for="telegram_pos_close_send_pdf"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Automated Reports" name="telegram_schedules">
+                        <setting string="Daily Summaries" help="Send automatic daily sales summaries">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <div class="col-lg-12">
+                                        <button name="action_open_telegram_summaries"
+                                                type="object"
+                                                string="Configure Daily Summaries"
+                                                class="btn-secondary"
+                                                icon="fa-calendar"/>
+                                        <span class="ms-2 text-muted">
+                                            <field name="telegram_summary_count" class="oe_inline"/> active
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Report Schedules" help="Schedule any Odoo report to be sent automatically">
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <div class="col-lg-12">
+                                        <button name="action_open_telegram_schedules"
+                                                type="object"
+                                                string="Configure Report Schedules"
+                                                class="btn-secondary"
+                                                icon="fa-file-pdf-o"/>
+                                        <span class="ms-2 text-muted">
+                                            <field name="telegram_report_count" class="oe_inline"/> active
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Setup Instructions" name="telegram_help">
+                        <setting string="How to Setup">
+                            <div class="content-group">
+                                <div class="mt16 text-muted">
+                                    <p><strong>1. Create a Telegram Bot:</strong></p>
+                                    <ul>
+                                        <li>Open Telegram and search for @BotFather</li>
+                                        <li>Send /newbot and follow the instructions</li>
+                                        <li>Copy the Bot Token provided</li>
+                                    </ul>
+                                    <p><strong>2. Get your Chat ID:</strong></p>
+                                    <ul>
+                                        <li>Add your bot to a group or start a chat with it</li>
+                                        <li>Send a message to the bot/group</li>
+                                        <li>Visit: https://api.telegram.org/bot[TOKEN]/getUpdates</li>
+                                        <li>Find the "chat":{"id": YOUR_CHAT_ID} in the response</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
