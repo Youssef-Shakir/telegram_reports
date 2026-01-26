@@ -72,6 +72,13 @@ class TelegramReportSchedule(models.Model):
     date_from = fields.Date('Date From', help='For custom date range')
     date_to = fields.Date('Date To', help='For custom date range')
 
+    # Financial report type (for base_accounting_kit)
+    account_report_id = fields.Many2one(
+        'account.financial.report',
+        string='Financial Report Type',
+        help='Select the type of financial report (e.g., Profit and Loss, Balance Sheet)'
+    )
+
     # Telegram configuration
     chat_id = fields.Char(
         'Chat ID',
@@ -246,8 +253,15 @@ class TelegramReportSchedule(models.Model):
                 'target_move': 'posted',
                 'display_account': 'all',
                 'initial_balance': True,
+                # For base_accounting_kit
+                'account_report_id': self.account_report_id.id if self.account_report_id else False,
             },
         }
+
+        # Add account_report_id for base_accounting_kit
+        if self.account_report_id:
+            data['form']['account_report_id'] = [self.account_report_id.id, self.account_report_id.name]
+
         return data, date_from, date_to
 
     def _get_caption(self, record_count=0):

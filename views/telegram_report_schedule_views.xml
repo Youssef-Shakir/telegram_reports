@@ -61,8 +61,11 @@
                         </group>
                     </group>
 
-                    <group string="Date Range" invisible="report_mode != 'financial'">
+                    <group string="Financial Report Settings" invisible="report_mode != 'financial'">
                         <group>
+                            <field name="account_report_id"
+                                   placeholder="Select P&amp;L, Balance Sheet, etc."
+                                   options="{'no_create': True}"/>
                             <field name="date_range_type"/>
                             <field name="date_from" invisible="date_range_type != 'custom'"/>
                             <field name="date_to" invisible="date_range_type != 'custom'"/>

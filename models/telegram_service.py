@@ -169,7 +169,11 @@ class TelegramService(models.AbstractModel):
 
         _logger.info("Generating financial report: %s with data: %s", report.report_name, data)
 
-        # Generate PDF with data
+        # Check if this is a base_accounting_kit financial report
+        if report.report_name == 'base_accounting_kit.report_financial':
+            return self._send_base_accounting_kit_report(report, data, chat_id, caption, filename)
+
+        # Generate PDF with data for standard reports
         try:
             pdf_content, content_type = self.env['ir.actions.report']._render_qweb_pdf(
                 report.report_name,
@@ -184,6 +188,127 @@ class TelegramService(models.AbstractModel):
         # Generate filename
         if not filename:
             filename = f"{report.name}.pdf"
+        elif not filename.endswith('.pdf'):
+            filename += '.pdf'
+
+        return self.send_document(pdf_content, filename, chat_id=chat_id, caption=caption)
+
+    def _send_base_accounting_kit_report(self, report, data, chat_id=None, caption=None, filename=None):
+        """Special handling for base_accounting_kit financial reports.
+
+        These reports require creating a wizard record that computes
+        report_lines and journal_items before generating the PDF.
+        """
+        # Check if financial.report model exists
+        if 'financial.report' not in self.env:
+            raise UserError(_('base_accounting_kit module not installed or financial.report model not found'))
+
+        # Get account_report_id (P&L, Balance Sheet, etc.)
+        # Default to first available financial report if not specified
+        account_report = None
+        if data.get('form', {}).get('account_report_id'):
+            report_id = data['form']['account_report_id']
+            if isinstance(report_id, (list, tuple)):
+                report_id = report_id[0]
+            account_report = self.env['account.financial.report'].browse(report_id)
+        else:
+            # Try to find a default financial report (e.g., Profit and Loss)
+            account_report = self.env['account.financial.report'].search([
+                ('name', 'ilike', 'Profit')
+            ], limit=1)
+            if not account_report:
+                account_report = self.env['account.financial.report'].search([], limit=1)
+
+        if not account_report:
+            raise UserError(_('No financial report template found. Please configure account.financial.report'))
+
+        _logger.info("Using account financial report: %s (ID: %s)", account_report.name, account_report.id)
+
+        # Create the wizard record
+        wizard_vals = {
+            'date_from': data.get('date_from') or data.get('form', {}).get('date_from'),
+            'date_to': data.get('date_to') or data.get('form', {}).get('date_to'),
+            'account_report_id': account_report.id,
+            'target_move': data.get('target_move', 'posted'),
+            'view_format': data.get('view_format', 'vertical'),
+            'debit_credit': data.get('debit_credit', True),
+            'company_id': data.get('company_id') or self.env.company.id,
+            'enable_filter': False,
+        }
+
+        wizard = self.env['financial.report'].create(wizard_vals)
+        _logger.info("Created financial.report wizard: %s", wizard.id)
+
+        # Build the data structure that the report template expects
+        form_data = wizard.read([
+            'date_from', 'enable_filter', 'debit_credit', 'date_to',
+            'account_report_id', 'target_move', 'view_format', 'company_id'
+        ])[0]
+
+        report_data = {
+            'ids': [],
+            'model': 'ir.ui.menu',
+            'form': form_data,
+        }
+
+        # Build context
+        used_context = wizard._build_contexts(report_data)
+        report_data['form']['used_context'] = dict(
+            used_context,
+            lang=self.env.context.get('lang') or 'en_US'
+        )
+
+        # Get account lines and journal items (the key computation)
+        report_lines = wizard.get_account_lines(report_data['form'])
+        journal_items = wizard.find_journal_items(report_lines, report_data['form'])
+
+        # Set levels for report lines
+        def set_report_level(rec):
+            level = 1
+            if not rec['parent']:
+                return level
+            else:
+                for line in report_lines:
+                    key = 'a_id' if line['type'] == 'account' else 'id'
+                    if line[key] == rec['parent']:
+                        return level + set_report_level(line)
+            return level
+
+        for item in report_lines:
+            item['balance'] = round(item['balance'], 2)
+            if not item['parent']:
+                item['level'] = 1
+            else:
+                item['level'] = set_report_level(item)
+
+        # Get currency
+        currency = wizard._get_currency()
+
+        # Complete the data structure
+        report_data['currency'] = currency
+        report_data['journal_items'] = journal_items
+        report_data['report_lines'] = report_lines
+
+        _logger.info("Generated %d report lines and %d journal items",
+                    len(report_lines), len(journal_items))
+
+        # Generate PDF
+        try:
+            pdf_content, content_type = self.env['ir.actions.report']._render_qweb_pdf(
+                report.report_name,
+                [wizard.id],
+                data=report_data
+            )
+            _logger.info("base_accounting_kit PDF generated successfully")
+        except Exception as e:
+            _logger.error("Failed to generate base_accounting_kit PDF: %s", str(e))
+            raise UserError(_('Failed to generate PDF: %s') % str(e))
+
+        # Generate filename
+        if not filename:
+            date_from = wizard_vals.get('date_from', '')
+            date_to = wizard_vals.get('date_to', '')
+            filename = f"{account_report.name}_{date_from}_{date_to}.pdf"
         elif not filename.endswith('.pdf'):
             filename += '.pdf'
 
