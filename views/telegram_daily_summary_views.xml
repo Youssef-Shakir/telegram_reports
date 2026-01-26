@@ -10,6 +10,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="summary_type" widget="badge"/>
+                <field name="schedule_frequency" widget="badge"/>
                 <field name="schedule_time" widget="float_time"/>
                 <field name="last_sent"/>
                 <field name="active"/>
@@ -43,10 +44,22 @@
                         <group string="Summary Configuration">
                             <field name="summary_type" widget="radio"/>
                             <field name="pnl_period" invisible="summary_type != 'pnl'"/>
-                            <field name="schedule_time" widget="float_time"/>
                         </group>
                         <group string="Telegram">
                             <field name="chat_id" placeholder="Leave empty for default"/>
+                        </group>
+                    </group>
+
+                    <group string="Schedule">
+                        <group>
+                            <field name="schedule_frequency" widget="radio"/>
+                            <field name="schedule_time" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="schedule_day_of_week"
+                                   invisible="schedule_frequency != 'weekly'"/>
+                            <field name="schedule_day_of_month"
+                                   invisible="schedule_frequency != 'monthly'"/>
                         </group>
                     </group>
 
@@ -73,15 +86,16 @@
 
     <!-- Action -->
     <record id="telegram_daily_summary_action" model="ir.actions.act_window">
-        <field name="name">Daily Summaries</field>
+        <field name="name">Scheduled Summaries</field>
         <field name="res_model">telegram.daily.summary</field>
         <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create your first daily summary!
+                Create your first scheduled summary!
             </p>
             <p>
                 Send automatic summaries to Telegram: POS sales, orders, invoices, or Profit &amp; Loss reports.
+                Schedule daily, weekly, or monthly.
             </p>
         </field>
     </record>

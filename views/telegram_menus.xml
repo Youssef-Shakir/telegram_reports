@@ -7,9 +7,9 @@
               web_icon="telegram_reports,static/description/icon.svg"
               sequence="100"/>
 
-    <!-- Daily Summaries Menu -->
+    <!-- Scheduled Summaries Menu -->
     <menuitem id="telegram_reports_menu_daily"
-              name="Daily Summaries"
+              name="Scheduled Summaries"
               parent="telegram_reports_menu_root"
               action="telegram_daily_summary_action"
               sequence="5"/>

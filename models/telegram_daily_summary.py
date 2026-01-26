@@ -35,10 +35,33 @@ class TelegramDailySummary(models.Model):
     ], string='P&L Period', default='current_month')
 
     # Schedule
+    schedule_frequency = fields.Selection([
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+    ], string='Frequency', default='daily', required=True)
+
     schedule_time = fields.Float(
         'Send Time',
         default=21.0,
-        help='Time to send daily summary (24-hour format)'
+        help='Time to send summary (24-hour format)'
+    )
+
+    schedule_day_of_week = fields.Selection([
+        ('0', 'Monday'),
+        ('1', 'Tuesday'),
+        ('2', 'Wednesday'),
+        ('3', 'Thursday'),
+        ('4', 'Friday'),
+        ('5', 'Saturday'),
+        ('6', 'Sunday'),
+    ], string='Day of Week', default='0',
+       help='For weekly schedule')
+
+    schedule_day_of_month = fields.Integer(
+        'Day of Month',
+        default=1,
+        help='Day of month to send (1-28). For monthly schedule.'
     )
 
     # Telegram
@@ -359,28 +382,71 @@ class TelegramDailySummary(models.Model):
             }
         }
 
-    @api.model
-    def _cron_send_daily_summaries(self):
-        """Cron job to send daily summaries."""
+    def _should_send_now(self):
+        """Check if this summary should be sent now based on schedule."""
+        self.ensure_one()
         now = fields.Datetime.now()
         current_hour = now.hour + now.minute / 60
 
+        # Check if it's the right time (within 15-minute window)
+        if abs(self.schedule_time - current_hour) > 0.25:
+            return False
+
+        # Check if already sent in current period
+        if self.last_sent:
+            last_sent_local = fields.Datetime.context_timestamp(self, self.last_sent)
+            now_local = fields.Datetime.context_timestamp(self, now)
+
+            if self.schedule_frequency == 'daily':
+                # Already sent today?
+                if last_sent_local.date() == now_local.date():
+                    return False
+
+            elif self.schedule_frequency == 'weekly':
+                # Check if it's the right day of week
+                if str(now_local.weekday()) != self.schedule_day_of_week:
+                    return False
+                # Already sent this week?
+                last_sent_week = last_sent_local.isocalendar()[1]
+                current_week = now_local.isocalendar()[1]
+                if last_sent_local.year == now_local.year and last_sent_week == current_week:
+                    return False
+
+            elif self.schedule_frequency == 'monthly':
+                # Check if it's the right day of month
+                target_day = min(self.schedule_day_of_month, 28)
+                if now_local.day != target_day:
+                    return False
+                # Already sent this month?
+                if last_sent_local.year == now_local.year and last_sent_local.month == now_local.month:
+                    return False
+        else:
+            # Never sent before - check if it's the right day for weekly/monthly
+            now_local = fields.Datetime.context_timestamp(self, now)
+
+            if self.schedule_frequency == 'weekly':
+                if str(now_local.weekday()) != self.schedule_day_of_week:
+                    return False
+
+            elif self.schedule_frequency == 'monthly':
+                target_day = min(self.schedule_day_of_month, 28)
+                if now_local.day != target_day:
+                    return False
+
+        return True
+
+    @api.model
+    def _cron_send_daily_summaries(self):
+        """Cron job to send summaries (daily, weekly, or monthly)."""
         summaries = self.search([
             ('active', '=', True),
         ])
 
         for summary in summaries:
-            # Check if it's time to send (within 15-minute window)
-            if abs(summary.schedule_time - current_hour) <= 0.25:
-                # Check if already sent today
-                if summary.last_sent:
-                    last_sent_date = fields.Datetime.context_timestamp(summary, summary.last_sent).date()
-                    if last_sent_date == now.date():
-                        continue
-
+            if summary._should_send_now():
                 try:
                     summary.action_send_now()
-                    _logger.info("Sent daily summary: %s", summary.name)
+                    _logger.info("Sent %s summary: %s", summary.schedule_frequency, summary.name)
                 except Exception as e:
                     _logger.error("Failed to send summary %s: %s", summary.name, str(e))
 
