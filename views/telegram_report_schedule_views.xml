@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- List View -->
+    <!-- Tree View -->
     <record id="telegram_report_schedule_view_list" model="ir.ui.view">
-        <field name="name">telegram.report.schedule.list</field>
+        <field name="name">telegram.report.schedule.tree</field>
         <field name="model">telegram.report.schedule</field>
         <field name="arch" type="xml">
-            <list>
+            <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="report_id"/>
@@ -16,7 +16,7 @@
                 <field name="last_sent"/>
                 <field name="send_count"/>
                 <field name="active"/>
-            </list>
+            </tree>
         </field>
     </record>
 
@@ -54,21 +54,25 @@
                         </group>
                     </group>
 
-                    <group string="Record Filter" invisible="report_mode != 'records'">
+                    <group string="Record Filter"
+                           attrs="{'invisible': [('report_mode', '!=', 'records')]}">
                         <group>
                             <field name="domain" placeholder="[]"/>
                             <field name="limit_records"/>
                         </group>
                     </group>
 
-                    <group string="Financial Report Settings" invisible="report_mode != 'financial'">
+                    <group string="Financial Report Settings"
+                           attrs="{'invisible': [('report_mode', '!=', 'financial')]}">
                         <group>
                             <field name="account_report_id"
                                    placeholder="Select P&amp;L, Balance Sheet, etc."
                                    options="{'no_create': True}"/>
                             <field name="date_range_type"/>
-                            <field name="date_from" invisible="date_range_type != 'custom'"/>
-                            <field name="date_to" invisible="date_range_type != 'custom'"/>
+                            <field name="date_from"
+                                   attrs="{'invisible': [('date_range_type', '!=', 'custom')]}"/>
+                            <field name="date_to"
+                                   attrs="{'invisible': [('date_range_type', '!=', 'custom')]}"/>
                         </group>
                     </group>
 
@@ -78,15 +82,16 @@
                         </group>
                         <group>
                             <field name="schedule_time" widget="float_time"
-                                   invisible="schedule_type == 'manual'"/>
+                                   attrs="{'invisible': [('schedule_type', '=', 'manual')]}"/>
                             <field name="schedule_day_of_week"
-                                   invisible="schedule_type != 'weekly'"/>
+                                   attrs="{'invisible': [('schedule_type', '!=', 'weekly')]}"/>
                             <field name="schedule_day_of_month"
-                                   invisible="schedule_type != 'monthly'"/>
+                                   attrs="{'invisible': [('schedule_type', '!=', 'monthly')]}"/>
                         </group>
                     </group>
 
-                    <group string="Statistics" invisible="send_count == 0">
+                    <group string="Statistics"
+                           attrs="{'invisible': [('send_count', '=', 0)]}">
                         <group>
                             <field name="last_sent"/>
                             <field name="send_count"/>
@@ -126,7 +131,7 @@
     <record id="telegram_report_schedule_action" model="ir.actions.act_window">
         <field name="name">Report Schedules</field>
         <field name="res_model">telegram.report.schedule</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="telegram_report_schedule_view_search"/>
         <field name="context">{'search_default_filter_active': 1}</field>
         <field name="help" type="html">

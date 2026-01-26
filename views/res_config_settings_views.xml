@@ -39,12 +39,14 @@
                     <block title="POS Session Close" name="telegram_pos_settings">
                         <setting string="Send on Session Close" help="Automatically send summary when POS session is closed">
                             <field name="telegram_send_on_pos_close"/>
-                            <div class="content-group mt16" invisible="not telegram_send_on_pos_close">
+                            <div class="content-group mt16"
+                                 attrs="{'invisible': [('telegram_send_on_pos_close', '=', False)]}">
                                 <div class="row">
                                     <field name="telegram_pos_close_top_products"/>
                                     <label for="telegram_pos_close_top_products"/>
                                 </div>
-                                <div class="row mt8" invisible="not telegram_pos_close_top_products">
+                                <div class="row mt8"
+                                     attrs="{'invisible': [('telegram_pos_close_top_products', '=', False)]}">
                                     <label for="telegram_pos_close_top_count" class="col-lg-4"/>
                                     <field name="telegram_pos_close_top_count" class="col-lg-2"/>
                                 </div>
