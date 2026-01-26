@@ -13,10 +13,10 @@
                         string="Send to Telegram"
                         class="btn-secondary"
                         icon="fa-telegram"
-                        attrs="{'invisible': [('state', 'not in', ['opened', 'closing_control', 'closed'])]}"/>
+                        invisible="state not in ('opened', 'closing_control', 'closed')"/>
             </xpath>
             <xpath expr="//sheet" position="inside">
-                <group attrs="{'invisible': [('telegram_sent', '=', False)]}">
+                <group invisible="not telegram_sent">
                     <field name="telegram_sent" readonly="1"/>
                 </group>
             </xpath>

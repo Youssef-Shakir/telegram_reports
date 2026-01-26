@@ -55,7 +55,7 @@
                     </group>
 
                     <group string="Record Filter"
-                           attrs="{'invisible': [('report_mode', '!=', 'records')]}">
+                           invisible="report_mode != 'records'">
                         <group>
                             <field name="domain" placeholder="[]"/>
                             <field name="limit_records"/>
@@ -63,16 +63,16 @@
                     </group>
 
                     <group string="Financial Report Settings"
-                           attrs="{'invisible': [('report_mode', '!=', 'financial')]}">
+                           invisible="report_mode != 'financial'">
                         <group>
                             <field name="account_report_id"
                                    placeholder="Select P&amp;L, Balance Sheet, etc."
                                    options="{'no_create': True}"/>
                             <field name="date_range_type"/>
                             <field name="date_from"
-                                   attrs="{'invisible': [('date_range_type', '!=', 'custom')]}"/>
+                                   invisible="date_range_type != 'custom'"/>
                             <field name="date_to"
-                                   attrs="{'invisible': [('date_range_type', '!=', 'custom')]}"/>
+                                   invisible="date_range_type != 'custom'"/>
                         </group>
                     </group>
 
@@ -82,16 +82,16 @@
                         </group>
                         <group>
                             <field name="schedule_time" widget="float_time"
-                                   attrs="{'invisible': [('schedule_type', '=', 'manual')]}"/>
+                                   invisible="schedule_type == 'manual'"/>
                             <field name="schedule_day_of_week"
-                                   attrs="{'invisible': [('schedule_type', '!=', 'weekly')]}"/>
+                                   invisible="schedule_type != 'weekly'"/>
                             <field name="schedule_day_of_month"
-                                   attrs="{'invisible': [('schedule_type', '!=', 'monthly')]}"/>
+                                   invisible="schedule_type != 'monthly'"/>
                         </group>
                     </group>
 
                     <group string="Statistics"
-                           attrs="{'invisible': [('send_count', '=', 0)]}">
+                           invisible="send_count == 0">
                         <group>
                             <field name="last_sent"/>
                             <field name="send_count"/>
