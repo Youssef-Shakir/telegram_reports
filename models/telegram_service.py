@@ -153,6 +153,42 @@ class TelegramService(models.AbstractModel):
 
         return self.send_document(pdf_content, filename, chat_id=chat_id, caption=caption)
 
+    def send_financial_report(self, report_ref, data, chat_id=None, caption=None, filename=None):
+        """Send financial/accounting report as PDF to Telegram.
+
+        Financial reports typically require date ranges and other parameters
+        passed via the data dict rather than record IDs.
+        """
+        # Get report action
+        if isinstance(report_ref, str):
+            report = self.env.ref(report_ref, raise_if_not_found=False)
+            if not report:
+                raise UserError(_('Report not found: %s') % report_ref)
+        else:
+            report = report_ref
+
+        _logger.info("Generating financial report: %s with data: %s", report.report_name, data)
+
+        # Generate PDF with data
+        try:
+            pdf_content, content_type = self.env['ir.actions.report']._render_qweb_pdf(
+                report.report_name,
+                [],  # Empty record IDs - financial reports use data dict
+                data=data
+            )
+            _logger.info("Financial report PDF generated successfully: %s", report.report_name)
+        except Exception as e:
+            _logger.error("Failed to generate financial report PDF %s: %s", report.report_name, str(e))
+            raise UserError(_('Failed to generate PDF: %s') % str(e))
+
+        # Generate filename
+        if not filename:
+            filename = f"{report.name}.pdf"
+        elif not filename.endswith('.pdf'):
+            filename += '.pdf'
+
+        return self.send_document(pdf_content, filename, chat_id=chat_id, caption=caption)
+
     def test_connection(self, token=None, chat_id=None):
         """Test Telegram bot connection."""
         token = token or self._get_bot_token()

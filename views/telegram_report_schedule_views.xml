@@ -10,6 +10,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="report_id"/>
+                <field name="report_mode" widget="badge"/>
                 <field name="schedule_type" widget="badge"/>
                 <field name="next_scheduled"/>
                 <field name="last_sent"/>
@@ -45,12 +46,26 @@
                         <group string="Report Configuration">
                             <field name="report_id" options="{'no_create': True}"/>
                             <field name="model_id" invisible="1"/>
-                            <field name="domain" placeholder="[]"/>
-                            <field name="limit_records"/>
+                            <field name="report_mode" widget="radio"/>
                         </group>
                         <group string="Telegram Settings">
                             <field name="chat_id" placeholder="Leave empty for default"/>
                             <field name="caption_template"/>
+                        </group>
+                    </group>
+
+                    <group string="Record Filter" invisible="report_mode != 'records'">
+                        <group>
+                            <field name="domain" placeholder="[]"/>
+                            <field name="limit_records"/>
+                        </group>
+                    </group>
+
+                    <group string="Date Range" invisible="report_mode != 'financial'">
+                        <group>
+                            <field name="date_range_type"/>
+                            <field name="date_from" invisible="date_range_type != 'custom'"/>
+                            <field name="date_to" invisible="date_range_type != 'custom'"/>
                         </group>
                     </group>
 

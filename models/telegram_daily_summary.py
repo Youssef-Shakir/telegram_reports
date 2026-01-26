@@ -23,8 +23,16 @@ class TelegramDailySummary(models.Model):
         ('pos', 'POS Sales Summary'),
         ('sales', 'Sales Orders Summary'),
         ('invoices', 'Invoices Summary'),
+        ('pnl', 'Profit & Loss Summary'),
         ('custom', 'Custom Summary'),
     ], string='Summary Type', default='pos', required=True)
+
+    # P&L Options
+    pnl_period = fields.Selection([
+        ('current_month', 'Current Month'),
+        ('last_month', 'Last Month'),
+        ('current_year', 'Current Year'),
+    ], string='P&L Period', default='current_month')
 
     # Schedule
     schedule_time = fields.Float(
@@ -122,6 +130,10 @@ class TelegramDailySummary(models.Model):
         self.ensure_one()
         date = date or fields.Date.today()
 
+        # Check if Sales module is installed
+        if 'sale.order' not in self.env:
+            return "⚠️ Sales module not installed\nوحدة المبيعات غير مثبتة"
+
         orders = self.env['sale.order'].search([
             ('date_order', '>=', datetime.combine(date, datetime.min.time())),
             ('date_order', '<=', datetime.combine(date, datetime.max.time())),
@@ -166,6 +178,10 @@ class TelegramDailySummary(models.Model):
         self.ensure_one()
         date = date or fields.Date.today()
 
+        # Check if Accounting module is installed
+        if 'account.move' not in self.env:
+            return "⚠️ Accounting module not installed\nوحدة المحاسبة غير مثبتة"
+
         invoices = self.env['account.move'].search([
             ('invoice_date', '=', date),
             ('move_type', '=', 'out_invoice'),
@@ -190,6 +206,119 @@ class TelegramDailySummary(models.Model):
 
         return msg
 
+    def _get_pnl_summary(self):
+        """Generate Profit & Loss summary."""
+        self.ensure_one()
+
+        # Check if Accounting module is installed
+        if 'account.move.line' not in self.env:
+            return "⚠️ Accounting module not installed\nوحدة المحاسبة غير مثبتة"
+
+        # Determine date range based on period
+        today = fields.Date.today()
+        if self.pnl_period == 'current_month':
+            date_from = today.replace(day=1)
+            date_to = today
+            period_name = today.strftime('%B %Y')
+            period_name_ar = f"شهر {today.month}/{today.year}"
+        elif self.pnl_period == 'last_month':
+            first_of_month = today.replace(day=1)
+            last_month_end = first_of_month - timedelta(days=1)
+            date_from = last_month_end.replace(day=1)
+            date_to = last_month_end
+            period_name = last_month_end.strftime('%B %Y')
+            period_name_ar = f"شهر {last_month_end.month}/{last_month_end.year}"
+        else:  # current_year
+            date_from = today.replace(month=1, day=1)
+            date_to = today
+            period_name = str(today.year)
+            period_name_ar = f"سنة {today.year}"
+
+        company = self.env.company
+        currency = company.currency_id
+
+        # Get income accounts (Odoo 18 syntax with company context)
+        income_accounts = self.env['account.account'].with_company(company).search([
+            ('account_type', '=', 'income'),
+        ])
+
+        # Get expense accounts (Odoo 18 syntax with company context)
+        expense_accounts = self.env['account.account'].with_company(company).search([
+            ('account_type', '=', 'expense'),
+        ])
+
+        # Calculate income (credit - debit for income accounts)
+        income_lines = self.env['account.move.line'].search([
+            ('account_id', 'in', income_accounts.ids),
+            ('date', '>=', date_from),
+            ('date', '<=', date_to),
+            ('parent_state', '=', 'posted'),
+        ])
+        total_income = sum(income_lines.mapped('credit')) - sum(income_lines.mapped('debit'))
+
+        # Calculate expenses (debit - credit for expense accounts)
+        expense_lines = self.env['account.move.line'].search([
+            ('account_id', 'in', expense_accounts.ids),
+            ('date', '>=', date_from),
+            ('date', '<=', date_to),
+            ('parent_state', '=', 'posted'),
+        ])
+        total_expenses = sum(expense_lines.mapped('debit')) - sum(expense_lines.mapped('credit'))
+
+        # Calculate profit/loss
+        net_profit = total_income - total_expenses
+
+        # Build message
+        msg = f"📊 <b>تقرير الأرباح والخسائر</b>\n"
+        msg += f"📅 {period_name_ar}\n"
+        msg += f"🏢 {company.name}\n"
+        msg += f"{'─' * 28}\n\n"
+
+        msg += f"💵 <b>الإيرادات:</b> {total_income:,.2f} {currency.symbol}\n"
+        msg += f"💸 <b>المصروفات:</b> {total_expenses:,.2f} {currency.symbol}\n"
+        msg += f"{'─' * 28}\n"
+
+        if net_profit >= 0:
+            msg += f"✅ <b>صافي الربح:</b> {net_profit:,.2f} {currency.symbol}\n"
+        else:
+            msg += f"❌ <b>صافي الخسارة:</b> {abs(net_profit):,.2f} {currency.symbol}\n"
+
+        # Profit margin
+        if total_income > 0:
+            margin = (net_profit / total_income) * 100
+            msg += f"📈 <b>هامش الربح:</b> {margin:.1f}%\n"
+
+        # Top expense categories
+        msg += f"\n💰 <b>أعلى المصروفات:</b>\n"
+        expense_by_account = {}
+        for line in expense_lines:
+            acc_name = line.account_id.name
+            expense_by_account[acc_name] = expense_by_account.get(acc_name, 0) + (line.debit - line.credit)
+
+        top_expenses = sorted(expense_by_account.items(), key=lambda x: -x[1])[:5]
+        for i, (account, amount) in enumerate(top_expenses, 1):
+            if amount > 0:
+                msg += f"  {i}. {account}: {amount:,.2f} {currency.symbol}\n"
+
+        # Top income sources
+        msg += f"\n💵 <b>أعلى الإيرادات:</b>\n"
+        income_by_account = {}
+        for line in income_lines:
+            acc_name = line.account_id.name
+            income_by_account[acc_name] = income_by_account.get(acc_name, 0) + (line.credit - line.debit)
+
+        top_income = sorted(income_by_account.items(), key=lambda x: -x[1])[:5]
+        for i, (account, amount) in enumerate(top_income, 1):
+            if amount > 0:
+                msg += f"  {i}. {account}: {amount:,.2f} {currency.symbol}\n"
+
+        msg += f"\n{'─' * 28}\n"
+        msg += f"📆 من: {date_from.strftime('%Y-%m-%d')}\n"
+        msg += f"📆 إلى: {date_to.strftime('%Y-%m-%d')}\n"
+        msg += f"⏰ {datetime.now().strftime('%H:%M')}"
+
+        return msg
+
     def _format_no_sales_message(self, date, type_name="مبيعات"):
         """Format message when no sales found."""
         msg = f"📊 <b>تقرير {type_name} اليوم</b>\n"
@@ -210,6 +339,8 @@ class TelegramDailySummary(models.Model):
             message = self._get_sales_summary()
         elif self.summary_type == 'invoices':
             message = self._get_invoices_summary()
+        elif self.summary_type == 'pnl':
+            message = self._get_pnl_summary()
         else:
             raise UserError(_('Custom summary not implemented yet'))
 

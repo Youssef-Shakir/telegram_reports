@@ -35,7 +35,15 @@ class TelegramReportSchedule(models.Model):
         readonly=True
     )
 
-    # Filter configuration
+    # Report type - record-based or date-based (financial reports)
+    report_mode = fields.Selection([
+        ('records', 'Record-based (select records by domain)'),
+        ('financial', 'Financial Report (date range)'),
+    ], string='Report Mode', default='records', required=True,
+       help='Record-based: Select records using domain filter.\n'
+            'Financial Report: Use date range for accounting reports.')
+
+    # Filter configuration (for record-based reports)
     domain = fields.Char(
         'Filter Domain',
         default='[]',
@@ -48,6 +56,21 @@ class TelegramReportSchedule(models.Model):
         default=0,
         help='Maximum number of records to include. 0 for no limit.'
     )
+
+    # Date configuration (for financial reports)
+    date_range_type = fields.Selection([
+        ('today', 'Today'),
+        ('yesterday', 'Yesterday'),
+        ('this_week', 'This Week'),
+        ('last_week', 'Last Week'),
+        ('this_month', 'This Month'),
+        ('last_month', 'Last Month'),
+        ('this_year', 'This Year'),
+        ('custom', 'Custom Range'),
+    ], string='Date Range', default='this_month')
+
+    date_from = fields.Date('Date From', help='For custom date range')
+    date_to = fields.Date('Date To', help='For custom date range')
 
     # Telegram configuration
     chat_id = fields.Char(
@@ -151,6 +174,82 @@ class TelegramReportSchedule(models.Model):
 
         return records
 
+    def _get_date_range(self):
+        """Calculate date range based on date_range_type."""
+        self.ensure_one()
+        today = fields.Date.today()
+
+        if self.date_range_type == 'today':
+            return today, today
+        elif self.date_range_type == 'yesterday':
+            yesterday = today - timedelta(days=1)
+            return yesterday, yesterday
+        elif self.date_range_type == 'this_week':
+            start = today - timedelta(days=today.weekday())
+            return start, today
+        elif self.date_range_type == 'last_week':
+            start = today - timedelta(days=today.weekday() + 7)
+            end = start + timedelta(days=6)
+            return start, end
+        elif self.date_range_type == 'this_month':
+            start = today.replace(day=1)
+            return start, today
+        elif self.date_range_type == 'last_month':
+            first_of_month = today.replace(day=1)
+            last_month_end = first_of_month - timedelta(days=1)
+            last_month_start = last_month_end.replace(day=1)
+            return last_month_start, last_month_end
+        elif self.date_range_type == 'this_year':
+            start = today.replace(month=1, day=1)
+            return start, today
+        elif self.date_range_type == 'custom':
+            return self.date_from or today, self.date_to or today
+        else:
+            return today, today
+
+    def _get_financial_report_data(self):
+        """Prepare data for financial reports."""
+        self.ensure_one()
+        date_from, date_to = self._get_date_range()
+        company = self.env.company
+
+        # Common data structure for financial reports
+        # This covers most accounting report wizards
+        data = {
+            # Date fields (various formats used by different reports)
+            'date_from': date_from,
+            'date_to': date_to,
+            'start_date': date_from,
+            'end_date': date_to,
+            # Company
+            'company_id': company.id,
+            'company_ids': [company.id],
+            # Journal filters
+            'journal_ids': [],
+            'journals': self.env['account.journal'].search([('company_id', '=', company.id)]).ids,
+            # Move/entry filters
+            'target_move': 'posted',
+            'state': 'posted',
+            # Display options
+            'display_account': 'all',
+            'sortby': 'sort_date',
+            'initial_balance': True,
+            # For P&L / Balance Sheet reports
+            'debit_credit': True,
+            'with_currency': False,
+            # Form data wrapper (some reports expect this structure)
+            'form': {
+                'date_from': date_from,
+                'date_to': date_to,
+                'company_id': company.id,
+                'journal_ids': [],
+                'target_move': 'posted',
+                'display_account': 'all',
+                'initial_balance': True,
+            },
+        }
+        return data, date_from, date_to
+
     def _get_caption(self, record_count=0):
         """Generate caption from template."""
         self.ensure_one()
@@ -169,22 +268,16 @@ class TelegramReportSchedule(models.Model):
         if not self.report_id:
             raise UserError(_('No report selected for this schedule.'))
 
-        records = self._get_records()
-        if not records:
-            raise UserError(_('No records found matching the filter criteria.'))
-
-        caption = self._get_caption(len(records))
         chat_id = self.chat_id or None
-
         telegram = self.env['telegram.service']
+
         try:
-            success = telegram.send_pdf_report(
-                self.report_id,
-                records.ids,
-                chat_id=chat_id,
-                caption=caption,
-                filename=f"{self.name}.pdf"
-            )
+            if self.report_mode == 'financial':
+                # Financial report - use date range and data dict
+                success = self._send_financial_report(telegram, chat_id)
+            else:
+                # Record-based report
+                success = self._send_record_report(telegram, chat_id)
         except Exception as e:
             raise UserError(_('Failed to send report: %s') % str(e))
 
@@ -204,6 +297,36 @@ class TelegramReportSchedule(models.Model):
             }
         else:
             raise UserError(_('Failed to send report. Check Telegram configuration.'))
+
+    def _send_record_report(self, telegram, chat_id):
+        """Send record-based report."""
+        records = self._get_records()
+        if not records:
+            raise UserError(_('No records found matching the filter criteria.'))
+
+        caption = self._get_caption(len(records))
+        return telegram.send_pdf_report(
+            self.report_id,
+            records.ids,
+            chat_id=chat_id,
+            caption=caption,
+            filename=f"{self.name}.pdf"
+        )
+
+    def _send_financial_report(self, telegram, chat_id):
+        """Send financial/accounting report with date range."""
+        data, date_from, date_to = self._get_financial_report_data()
+
+        caption = self._get_caption(0)
+        caption += f"\n📆 {date_from} → {date_to}"
+
+        return telegram.send_financial_report(
+            self.report_id,
+            data,
+            chat_id=chat_id,
+            caption=caption,
+            filename=f"{self.name}_{date_from}_{date_to}.pdf"
+        )
 
     @api.model
     def _cron_send_scheduled_reports(self):

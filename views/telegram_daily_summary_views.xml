@@ -42,6 +42,7 @@
                     <group>
                         <group string="Summary Configuration">
                             <field name="summary_type" widget="radio"/>
+                            <field name="pnl_period" invisible="summary_type != 'pnl'"/>
                             <field name="schedule_time" widget="float_time"/>
                         </group>
                         <group string="Telegram">
@@ -49,7 +50,7 @@
                         </group>
                     </group>
 
-                    <group string="Options">
+                    <group string="Options" invisible="summary_type == 'pnl'">
                         <group>
                             <field name="include_top_products"/>
                             <field name="top_products_count"
@@ -80,7 +81,7 @@
                 Create your first daily summary!
             </p>
             <p>
-                Send automatic daily summaries of POS sales, orders, or invoices to Telegram.
+                Send automatic summaries to Telegram: POS sales, orders, invoices, or Profit &amp; Loss reports.
             </p>
         </field>
     </record>
