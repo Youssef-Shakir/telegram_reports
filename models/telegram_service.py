@@ -58,14 +58,40 @@ class TelegramService(models.AbstractModel):
         if not chat_id:
             raise UserError(_('No chat ID configured. Go to Settings to configure it.'))
 
-        data = {
-            'chat_id': chat_id,
-            'text': text,
-            'parse_mode': parse_mode,
-        }
-
-        result = self._make_request('sendMessage', data=data)
+        result = None
+        for chunk in self._split_message(text):
+            result = self._make_request('sendMessage', data={
+                'chat_id': chat_id,
+                'text': chunk,
+                'parse_mode': parse_mode,
+            })
         return bool(result)
+
+    # Telegram rejects messages over 4096 characters; keep a margin.
+    MESSAGE_LIMIT = 4000
+
+    def _split_message(self, text):
+        """Split a long message at line breaks into parts Telegram accepts.
+        Our HTML tags never span lines, so a part never cuts a tag in two."""
+        if len(text) <= self.MESSAGE_LIMIT:
+            return [text]
+        parts, current = [], ''
+        for line in text.split('\n'):
+            while len(line) > self.MESSAGE_LIMIT:   # a single huge line
+                if current:
+                    parts.append(current)
+                    current = ''
+                parts.append(line[:self.MESSAGE_LIMIT])
+                line = line[self.MESSAGE_LIMIT:]
+            candidate = f"{current}\n{line}" if current else line
+            if len(candidate) > self.MESSAGE_LIMIT:
+                parts.append(current)
+                current = line
+            else:
+                current = candidate
+        if current:
+            parts.append(current)
+        return parts
 
     def send_document(self, document, filename, chat_id=None, caption=None):
         """Send a document/file to Telegram."""
@@ -89,6 +115,18 @@ class TelegramService(models.AbstractModel):
         }
 
         result = self._make_request('sendDocument', data=data, files=files)
+        return bool(result)
+
+    def send_photo(self, image, filename, chat_id=None, caption=None):
+        """Send an image (bytes) as a Telegram photo."""
+        chat_id = chat_id or self._get_default_chat_id()
+        if not chat_id:
+            raise UserError(_('No chat ID configured. Go to Settings to configure it.'))
+        data = {'chat_id': chat_id}
+        if caption:
+            data['caption'] = caption
+            data['parse_mode'] = 'HTML'
+        result = self._make_request('sendPhoto', data=data, files={'photo': (filename, image)})
         return bool(result)
 
     def send_pdf_report(self, report_ref, record_ids, chat_id=None, caption=None, filename=None):
