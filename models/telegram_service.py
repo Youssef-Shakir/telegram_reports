@@ -16,16 +16,59 @@ class TelegramService(models.AbstractModel):
     _name = 'telegram.service'
     _description = 'Telegram Service'
 
+    # What a message is about, for the DoniaLink Platform's routing (set by the caller with
+    # with_context(telegram_kind=...)): pos_session, daily_summary, finance_summary, scheduled_report, test
+    DEFAULT_KIND = 'scheduled_report'
+
+    def _company(self):
+        """The company the message is for: callers use with_company(session.company_id) and the like."""
+        return self.env.company
+
     def _get_bot_token(self):
-        """Get the configured bot token."""
-        return self.env['ir.config_parameter'].sudo().get_param('telegram_reports.bot_token', '')
+        """This company's bot token."""
+        return self._company().sudo().telegram_bot_token or ''
 
     def _get_default_chat_id(self):
-        """Get the default chat ID."""
-        return self.env['ir.config_parameter'].sudo().get_param('telegram_reports.default_chat_id', '')
+        """This company's default chat."""
+        return self._company().sudo().telegram_default_chat_id or ''
+
+    def _via_donialink(self):
+        """This company sends through the DoniaLink Platform (no bot token or chat here)."""
+        return self._company().sudo().telegram_delivery == 'donialink'
+
+    def _check_chat(self, chat_id):
+        if not chat_id and not self._via_donialink():
+            raise UserError(_('No chat ID configured. Go to Settings to configure it.'))
+
+    def _send_through_donialink(self, method, data=None, files=None):
+        """Hand the message to the DoniaLink Platform, which sends it to the groups receiving its kind."""
+        if 'donialink.agent.platform' not in self.env:
+            raise UserError(_('Telegram is set to go through DoniaLink, but the DoniaLink Agent Connector is not '
+                              'installed. Choose "Own Telegram bot" in Settings.'))
+        data = data or {}
+        kind = self.env.context.get('telegram_kind') or self.DEFAULT_KIND
+        platform = self.env['donialink.agent.platform'].sudo()
+        try:
+            if method == 'sendMessage':
+                answer = platform._send_telegram(kind, text=data.get('text'), company=self._company())
+            else:
+                field = 'photo' if method == 'sendPhoto' else 'document'
+                filename, content = (files or {})[field][:2]
+                answer = platform._send_telegram(kind, document=content, filename=filename,
+                                                 caption=data.get('caption'), as_photo=method == 'sendPhoto',
+                                                 company=self._company())
+        except UserError:
+            raise
+        except Exception as e:
+            raise UserError(_('DoniaLink could not send the Telegram message: %s') % e) from e
+        if not answer.get('delivered') and answer.get('message'):
+            _logger.warning("DoniaLink Telegram (%s): %s", kind, answer['message'])
+        return {'ok': True, 'result': answer}
 
     def _make_request(self, method, data=None, files=None):
-        """Make a request to Telegram API."""
+        """Make a request to Telegram API (or through the DoniaLink Platform)."""
+        if self._via_donialink():
+            return self._send_through_donialink(method, data=data, files=files)
         token = self._get_bot_token()
         if not token:
             _logger.error("Telegram bot token not configured")
@@ -55,8 +98,7 @@ class TelegramService(models.AbstractModel):
     def send_message(self, text, chat_id=None, parse_mode='HTML'):
         """Send a text message to Telegram."""
         chat_id = chat_id or self._get_default_chat_id()
-        if not chat_id:
-            raise UserError(_('No chat ID configured. Go to Settings to configure it.'))
+        self._check_chat(chat_id)
 
         result = None
         for chunk in self._split_message(text):
@@ -96,8 +138,7 @@ class TelegramService(models.AbstractModel):
     def send_document(self, document, filename, chat_id=None, caption=None):
         """Send a document/file to Telegram."""
         chat_id = chat_id or self._get_default_chat_id()
-        if not chat_id:
-            raise UserError(_('No chat ID configured. Go to Settings to configure it.'))
+        self._check_chat(chat_id)
 
         # Handle base64 encoded content
         if isinstance(document, str):
@@ -120,8 +161,7 @@ class TelegramService(models.AbstractModel):
     def send_photo(self, image, filename, chat_id=None, caption=None):
         """Send an image (bytes) as a Telegram photo."""
         chat_id = chat_id or self._get_default_chat_id()
-        if not chat_id:
-            raise UserError(_('No chat ID configured. Go to Settings to configure it.'))
+        self._check_chat(chat_id)
         data = {'chat_id': chat_id}
         if caption:
             data['caption'] = caption
@@ -353,7 +393,17 @@ class TelegramService(models.AbstractModel):
         return self.send_document(pdf_content, filename, chat_id=chat_id, caption=caption)
 
     def test_connection(self, token=None, chat_id=None):
-        """Test Telegram bot connection."""
+        """Test Telegram bot connection (or, through DoniaLink, which groups get this company's messages)."""
+        if self._via_donialink():
+            try:
+                answer = self.with_context(telegram_kind='test')._make_request('sendMessage', data={
+                    'text': '✅ Odoo Telegram Reports → DoniaLink (%s)\nتم الاتصال بنجاح!' % self._company().name,
+                })['result']
+            except UserError as e:
+                return {'success': False, 'message': str(e)}
+            if not answer.get('delivered'):
+                return {'success': False, 'message': answer.get('message') or _('No group received it.')}
+            return {'success': True, 'message': _('Sent through DoniaLink to: %s') % ', '.join(answer['groups'])}
         token = token or self._get_bot_token()
         chat_id = chat_id or self._get_default_chat_id()
 

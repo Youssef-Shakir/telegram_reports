@@ -8,7 +8,27 @@
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
                 <app data-string="Telegram Reports" string="Telegram Reports" name="telegram_reports">
-                    <block title="Telegram Bot Configuration" name="telegram_bot_settings">
+                    <block title="Delivery" name="telegram_delivery">
+                        <setting string="How messages are sent" company_dependent="1"
+                                 help="Per company: its own Telegram bot, or through DoniaLink (the platform's bot sends each kind of message to the groups set there: e.g. session closing to the manager, P&amp;L to the owners).">
+                            <field name="telegram_donialink_available" invisible="1"/>
+                            <field name="telegram_delivery" readonly="1"/>
+                            <div class="mt8">
+                                <button name="action_telegram_use_donialink" type="object" string="Send through DoniaLink"
+                                        class="btn-primary" icon="fa-paper-plane"
+                                        invisible="telegram_delivery == 'donialink' or not telegram_donialink_available"/>
+                                <button name="action_telegram_use_own_bot" type="object" string="Use own Telegram bot"
+                                        class="btn-secondary" invisible="telegram_delivery == 'bot'"/>
+                                <button name="action_test_telegram_connection" type="object" string="Test"
+                                        class="btn-link" icon="fa-check" invisible="telegram_delivery == 'bot'"/>
+                            </div>
+                            <div class="text-muted mt8" invisible="telegram_delivery == 'donialink' or telegram_donialink_available">
+                                With the DoniaLink Agent Connector installed and connected, messages can go through DoniaLink.
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Telegram Bot Configuration" name="telegram_bot_settings" invisible="telegram_delivery == 'donialink'">
                         <setting string="Bot Token" help="Get your bot token from @BotFather on Telegram">
                             <div class="content-group">
                                 <div class="row mt16">
@@ -52,6 +72,26 @@
                                     <field name="telegram_pos_close_send_pdf"/>
                                     <label for="telegram_pos_close_send_pdf"/>
                                 </div>
+                                <div class="row mt8">
+                                    <field name="telegram_send_on_order_cancel"/>
+                                    <label for="telegram_send_on_order_cancel"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Order Now" name="telegram_order_now" invisible="not telegram_order_now_available">
+                        <setting string="Daily Order Now list" company_dependent="1"
+                                 help="Once a day, the ingredients at or below their reorder point (Recipe Costing), by supplier: quantity to order in the purchase unit, stock on hand, days left. Sent only when something is to order.">
+                            <field name="telegram_order_now_available" invisible="1"/>
+                            <field name="telegram_order_now"/>
+                            <div class="content-group mt8" invisible="not telegram_order_now">
+                                <div class="row">
+                                    <label for="telegram_order_now_time" class="col-lg-4" string="Send at"/>
+                                    <field name="telegram_order_now_time" widget="float_time" class="col-lg-2"/>
+                                </div>
+                                <button name="action_telegram_send_order_now" type="object" string="Send now"
+                                        class="btn-link mt8" icon="fa-shopping-cart"/>
                             </div>
                         </setting>
                     </block>

@@ -16,6 +16,8 @@ class TelegramReportSchedule(models.Model):
 
     name = fields.Char('Name', required=True)
     active = fields.Boolean('Active', default=True)
+    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company,
+                                 help="The report is this company's, sent with its Telegram settings.")
     sequence = fields.Integer('Sequence', default=10)
 
     # Report configuration
@@ -218,7 +220,7 @@ class TelegramReportSchedule(models.Model):
         """Prepare data for financial reports."""
         self.ensure_one()
         date_from, date_to = self._get_date_range()
-        company = self.env.company
+        company = self.company_id
 
         # Common data structure for financial reports
         # This covers most accounting report wizards
@@ -275,6 +277,12 @@ class TelegramReportSchedule(models.Model):
             record_count=record_count,
         )
 
+    def _telegram(self):
+        """The Telegram service for this schedule's company; financial reports are finance messages (DoniaLink
+        routes them to the groups that receive finance)."""
+        kind = 'finance_summary' if self.report_mode == 'financial' else 'scheduled_report'
+        return self.env['telegram.service'].with_company(self.company_id).with_context(telegram_kind=kind)
+
     def action_send_now(self):
         """Manually send the report now."""
         self.ensure_one()
@@ -283,7 +291,7 @@ class TelegramReportSchedule(models.Model):
             raise UserError(_('No report selected for this schedule.'))
 
         chat_id = self.chat_id or None
-        telegram = self.env['telegram.service']
+        telegram = self._telegram()
 
         try:
             if self.report_mode == 'financial':
@@ -314,7 +322,7 @@ class TelegramReportSchedule(models.Model):
 
     def _send_record_report(self, telegram, chat_id):
         """Send record-based report."""
-        records = self._get_records()
+        records = self.with_company(self.company_id)._get_records()
         if not records:
             raise UserError(_('No records found matching the filter criteria.'))
 
@@ -356,7 +364,7 @@ class TelegramReportSchedule(models.Model):
 
         for schedule in schedules:
             try:
-                records = schedule._get_records()
+                records = schedule.with_company(schedule.company_id)._get_records()
                 if not records:
                     _logger.info("No records for scheduled report: %s", schedule.name)
                     continue
@@ -364,7 +372,7 @@ class TelegramReportSchedule(models.Model):
                 caption = schedule._get_caption(len(records))
                 chat_id = schedule.chat_id or None
 
-                telegram = self.env['telegram.service']
+                telegram = schedule._telegram()
                 success = telegram.send_pdf_report(
                     schedule.report_id,
                     records.ids,

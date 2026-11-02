@@ -16,6 +16,8 @@ class TelegramDailySummary(models.Model):
 
     name = fields.Char('Name', required=True)
     active = fields.Boolean('Active', default=True)
+    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company,
+                                 help="The figures are this company's, sent with its Telegram settings.")
     sequence = fields.Integer('Sequence', default=10)
 
     # Summary type
@@ -89,6 +91,7 @@ class TelegramDailySummary(models.Model):
             ('date_order', '>=', datetime.combine(date, datetime.min.time())),
             ('date_order', '<=', datetime.combine(date, datetime.max.time())),
             ('state', 'in', ['paid', 'done', 'invoiced']),
+            ('company_id', '=', self.company_id.id),
         ])
 
         if not orders:
@@ -97,7 +100,7 @@ class TelegramDailySummary(models.Model):
         # Calculate totals
         total_sales = sum(orders.mapped('amount_total'))
         total_orders = len(orders)
-        currency = orders[0].currency_id if orders else self.env.company.currency_id
+        currency = orders[0].currency_id if orders else self.company_id.currency_id
 
         # Build message
         msg = f"📊 <b>تقرير مبيعات اليوم</b>\n"
@@ -161,6 +164,7 @@ class TelegramDailySummary(models.Model):
             ('date_order', '>=', datetime.combine(date, datetime.min.time())),
             ('date_order', '<=', datetime.combine(date, datetime.max.time())),
             ('state', 'in', ['sale', 'done']),
+            ('company_id', '=', self.company_id.id),
         ])
 
         if not orders:
@@ -168,7 +172,7 @@ class TelegramDailySummary(models.Model):
 
         total_sales = sum(orders.mapped('amount_total'))
         total_orders = len(orders)
-        currency = orders[0].currency_id if orders else self.env.company.currency_id
+        currency = orders[0].currency_id if orders else self.company_id.currency_id
 
         msg = f"📊 <b>تقرير طلبات البيع</b>\n"
         msg += f"📅 {date.strftime('%Y-%m-%d')}\n"
@@ -209,13 +213,14 @@ class TelegramDailySummary(models.Model):
             ('invoice_date', '=', date),
             ('move_type', '=', 'out_invoice'),
             ('state', '=', 'posted'),
+            ('company_id', '=', self.company_id.id),
         ])
 
         if not invoices:
             return self._format_no_sales_message(date, "فواتير")
 
         total = sum(invoices.mapped('amount_total'))
-        currency = invoices[0].currency_id if invoices else self.env.company.currency_id
+        currency = invoices[0].currency_id if invoices else self.company_id.currency_id
 
         msg = f"📊 <b>تقرير الفواتير</b>\n"
         msg += f"📅 {date.strftime('%Y-%m-%d')}\n"
@@ -257,7 +262,7 @@ class TelegramDailySummary(models.Model):
             period_name = str(today.year)
             period_name_ar = f"سنة {today.year}"
 
-        company = self.env.company
+        company = self.company_id
         currency = company.currency_id
 
         # Get income accounts (Odoo 18 syntax with company context)
@@ -367,7 +372,8 @@ class TelegramDailySummary(models.Model):
         else:
             raise UserError(_('Custom summary not implemented yet'))
 
-        telegram = self.env['telegram.service']
+        kind = 'finance_summary' if self.summary_type == 'pnl' else 'daily_summary'
+        telegram = self.env['telegram.service'].with_company(self.company_id).with_context(telegram_kind=kind)
         telegram.send_message(message, chat_id=self.chat_id or None)
 
         self.last_sent = fields.Datetime.now()

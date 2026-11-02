@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- each company sees and runs its own Telegram schedules and summaries -->
+    <record id="rule_telegram_report_schedule_company" model="ir.rule">
+        <field name="name">Telegram report schedules: own companies</field>
+        <field name="model_id" ref="model_telegram_report_schedule"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_telegram_daily_summary_company" model="ir.rule">
+        <field name="name">Telegram daily summaries: own companies</field>
+        <field name="model_id" ref="model_telegram_daily_summary"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

@@ -9,6 +9,7 @@
             <list>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
                 <field name="report_id"/>
                 <field name="report_mode" widget="badge"/>
                 <field name="schedule_type" widget="badge"/>
@@ -49,6 +50,7 @@
                             <field name="report_mode" widget="radio"/>
                         </group>
                         <group string="Telegram Settings">
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                             <field name="chat_id" placeholder="Leave empty for default"/>
                             <field name="caption_template"/>
                         </group>

@@ -9,6 +9,7 @@
             <list>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
                 <field name="summary_type" widget="badge"/>
                 <field name="schedule_frequency" widget="badge"/>
                 <field name="schedule_time" widget="float_time"/>
@@ -46,6 +47,7 @@
                             <field name="pnl_period" invisible="summary_type != 'pnl'"/>
                         </group>
                         <group string="Telegram">
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
                             <field name="chat_id" placeholder="Leave empty for default"/>
                         </group>
                     </group>

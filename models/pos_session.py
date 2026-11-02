@@ -17,13 +17,17 @@ class PosSession(models.Model):
 
     telegram_sent = fields.Boolean('Telegram Sent', default=False, copy=False)
 
+    def _telegram(self):
+        """The Telegram service for this session's company, tagged as a session message (DoniaLink routing)."""
+        return self.env['telegram.service'].with_company(self.company_id).with_context(telegram_kind='pos_session')
+
     def action_send_telegram_summary(self):
         """Manual button to send session summary to Telegram."""
         self.ensure_one()
 
         try:
             message = self._prepare_session_summary_message()
-            telegram = self.env['telegram.service']
+            telegram = self._telegram()
             telegram.send_message(message)
             self._send_discount_table()
 
@@ -49,10 +53,7 @@ class PosSession(models.Model):
         self.ensure_one()
 
         # Check if PDF sending is enabled
-        send_pdf = self.env['ir.config_parameter'].sudo().get_param(
-            'telegram_reports.pos_close_send_pdf', 'False'
-        )
-        if send_pdf != 'True':
+        if not self.company_id.telegram_pos_close_send_pdf:
             return False
 
         try:
@@ -73,7 +74,7 @@ class PosSession(models.Model):
             }
 
             # Generate PDF using the data-driven report
-            telegram = self.env['telegram.service']
+            telegram = self._telegram()
             success = telegram.send_pos_sale_details_report(
                 self,
                 data,
@@ -91,17 +92,14 @@ class PosSession(models.Model):
         self.ensure_one()
 
         # Check if feature is enabled
-        send_on_close = self.env['ir.config_parameter'].sudo().get_param(
-            'telegram_reports.send_on_pos_close', 'False'
-        )
-        if send_on_close != 'True':
-            _logger.info("Telegram send on POS close is disabled")
+        if not self.company_id.telegram_send_on_pos_close:
+            _logger.info("Telegram send on POS close is disabled for %s", self.company_id.name)
             return False
 
         try:
             # Send text summary
             message = self._prepare_session_summary_message()
-            telegram = self.env['telegram.service']
+            telegram = self._telegram()
             telegram.send_message(message)
             _logger.info("Sent Telegram text summary for POS session: %s", self.name)
             self._send_discount_table()
@@ -203,10 +201,7 @@ class PosSession(models.Model):
                 msg += f"  • الفرق: {difference:,.2f} {symbol} ⚠️\n"
 
         # Top products
-        include_top = self.env['ir.config_parameter'].sudo().get_param(
-            'telegram_reports.pos_close_top_products', 'True'
-        )
-        if include_top == 'True' and orders:
+        if self.company_id.telegram_pos_close_top_products and orders:
             product_sales = {}
             for order in orders:
                 for line in order.lines:
@@ -216,9 +211,7 @@ class PosSession(models.Model):
 
             if product_sales:
                 msg += f"\n🏆 <b>المنتجات الأكثر مبيعاً:</b>\n"
-                top_count = int(self.env['ir.config_parameter'].sudo().get_param(
-                    'telegram_reports.pos_close_top_count', '5'
-                ))
+                top_count = self.company_id.telegram_pos_close_top_count or 5
                 top_products = sorted(product_sales.items(), key=lambda x: -x[1])[:top_count]
                 for i, (product, qty) in enumerate(top_products, 1):
                     msg += f"  {i}. {product}: {qty:,.0f}\n"
@@ -378,7 +371,7 @@ tfoot td {{ background: #e3e8f2; font-weight: bold; font-size: 16px; }}
         try:
             image = self._render_discount_table_image(entries, symbol)
             caption = f"🏷 جدول الخصومات — {html.escape(self.name)}"
-            telegram = self.env['telegram.service']
+            telegram = self._telegram()
             try:
                 telegram.send_photo(image, f"Discounts_{self.name}.jpg", caption=caption)
             except Exception:

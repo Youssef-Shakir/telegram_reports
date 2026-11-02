@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Telegram Reports',
-    'version': '18.0.1.0.0',
+    'version': '18.0.2.1.0',
     'category': 'Tools',
     'summary': 'Automatic report sending via Telegram',
     'description': """
@@ -54,6 +54,7 @@ Developed by Yousif Shakir | تطوير يوسف شاكر
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/telegram_security.xml',
         'views/res_config_settings_views.xml',
         'views/telegram_report_schedule_views.xml',
         'views/telegram_daily_summary_views.xml',

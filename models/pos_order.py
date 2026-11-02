@@ -5,7 +5,7 @@ import threading
 
 import requests
 
-from odoo import models, fields
+from odoo import api, fields, models
 
 from .telegram_service import TELEGRAM_API_URL
 
@@ -79,14 +79,30 @@ class PosOrder(models.Model):
     def _schedule_telegram_cancel_messages(self, orders):
         if not orders:
             return
-        params = self.env['ir.config_parameter'].sudo()
-        if params.get_param('telegram_reports.send_on_order_cancel', 'True') != 'True':
-            return
-        token = params.get_param('telegram_reports.bot_token', '')
-        chat_id = params.get_param('telegram_reports.default_chat_id', '')
-        if not token or not chat_id:
+        company = orders[0].company_id.sudo()
+        if not company.telegram_send_on_order_cancel:
             return
         messages = [order._prepare_telegram_cancel_message() for order in orders]
+        if company.telegram_delivery == 'donialink':
+            # through the platform, after the commit (with its own cursor: this one is closed by then)
+            dbname, uid, company_id = self.env.cr.dbname, self.env.uid, company.id
+
+            def send_through_donialink():
+                try:
+                    with self.env.registry.cursor() as cr:
+                        env = api.Environment(cr, uid, {})
+                        service = env['telegram.service'].with_company(company_id).with_context(
+                            telegram_kind='pos_session')
+                        for text in messages:
+                            service.send_message(text)
+                except Exception:
+                    _logger.exception("Telegram cancel notification through DoniaLink failed (%s)", dbname)
+
+            self.env.cr.postcommit.add(send_through_donialink)
+            return
+        token, chat_id = company.telegram_bot_token, company.telegram_default_chat_id
+        if not token or not chat_id:
+            return
 
         def send():
             url = TELEGRAM_API_URL.format(token=token, method='sendMessage')
