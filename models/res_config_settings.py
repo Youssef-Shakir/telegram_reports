@@ -68,19 +68,6 @@ class ResConfigSettings(models.TransientModel):
             'title': _('Order Now'), 'type': 'success' if sent else 'info',
             'message': _('Sent to Telegram.') if sent else _('Nothing to order today: nothing was sent.')}}
 
-    def action_telegram_use_donialink(self):
-        """Send this company's Telegram messages through DoniaLink (its bot, its groups)."""
-        self.ensure_one()
-        if not self.telegram_donialink_available:
-            raise UserError(_('Install the DoniaLink Agent Connector and connect it to the platform first.'))
-        self.company_id.telegram_delivery = 'donialink'
-        return {'type': 'ir.actions.client', 'tag': 'reload'}
-
-    def action_telegram_use_own_bot(self):
-        self.ensure_one()
-        self.company_id.telegram_delivery = 'bot'
-        return {'type': 'ir.actions.client', 'tag': 'reload'}
-
     def action_test_telegram_connection(self):
         """Test the Telegram bot connection (or the DoniaLink route)."""
         self.ensure_one()

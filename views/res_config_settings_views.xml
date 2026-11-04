@@ -12,18 +12,13 @@
                         <setting string="How messages are sent" company_dependent="1"
                                  help="Per company: its own Telegram bot, or through DoniaLink (the platform's bot sends each kind of message to the groups set there: e.g. session closing to the manager, P&amp;L to the owners).">
                             <field name="telegram_donialink_available" invisible="1"/>
-                            <field name="telegram_delivery" readonly="1"/>
-                            <div class="mt8">
-                                <button name="action_telegram_use_donialink" type="object" string="Send through DoniaLink"
-                                        class="btn-primary" icon="fa-paper-plane"
-                                        invisible="telegram_delivery == 'donialink' or not telegram_donialink_available"/>
-                                <button name="action_telegram_use_own_bot" type="object" string="Use own Telegram bot"
-                                        class="btn-secondary" invisible="telegram_delivery == 'bot'"/>
+                            <field name="telegram_delivery" widget="radio"/>
+                            <div class="mt8" invisible="telegram_delivery == 'bot'">
                                 <button name="action_test_telegram_connection" type="object" string="Test"
-                                        class="btn-link" icon="fa-check" invisible="telegram_delivery == 'bot'"/>
+                                        class="btn-link" icon="fa-check"/>
                             </div>
-                            <div class="text-muted mt8" invisible="telegram_delivery == 'donialink' or telegram_donialink_available">
-                                With the DoniaLink Agent Connector installed and connected, messages can go through DoniaLink.
+                            <div class="text-warning mt8" invisible="telegram_delivery == 'bot' or telegram_donialink_available">
+                                The DoniaLink Agent Connector is not installed or not connected: messages can't go through DoniaLink until it is.
                             </div>
                         </setting>
                     </block>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ResCompany(models.Model):
@@ -26,3 +27,11 @@ class ResCompany(models.Model):
                                            help='Local time (24-hour) to send the list; only sent when something is '
                                                 'to order.')
     telegram_order_now_last = fields.Date('Telegram: Order Now Last Sent', readonly=True)
+
+    @api.constrains('telegram_delivery')
+    def _check_telegram_delivery(self):
+        if 'donialink.agent.platform' in self.env:
+            return
+        if any(company.telegram_delivery == 'donialink' for company in self):
+            raise ValidationError(_('To send through DoniaLink, install the DoniaLink Agent Connector first '
+                                    '(or choose "Own Telegram bot").'))
