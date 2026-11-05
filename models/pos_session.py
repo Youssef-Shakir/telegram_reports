@@ -114,116 +114,110 @@ class PosSession(models.Model):
             _logger.error("Failed to send Telegram summary for session %s: %s", self.name, str(e))
             return False
 
-    def _prepare_session_summary_message(self):
-        """Prepare the session summary message."""
-        self.ensure_one()
-
+    def _telegram_money(self, amount):
+        """1,250,000 IQD / 12.50 $: the currency's own decimals, nothing more."""
         currency = self.currency_id or self.company_id.currency_id
-        symbol = currency.symbol or currency.name
+        digits = currency.decimal_places if currency else 2
+        return f"{amount:,.{digits}f} {currency.symbol or currency.name}"
 
-        # Get orders for this session
+    def _telegram_cash_moves(self):
+        """Cash in / out made from the POS during the session (expenses paid from the drawer...),
+        without the lines Odoo adds at closing (cash difference)."""
+        prefix = f"{self.name}-"
+        moves = []
+        for line in self.statement_line_ids.sorted('id'):
+            label = line.payment_ref or ''
+            if not label.startswith(prefix):
+                continue
+            moves.append((label[len(prefix):].split('-', 1)[-1] or label, line.amount))
+        return moves
+
+    def _prepare_session_summary_message(self):
+        """Session summary, short enough to read on a phone: key figures first, one fact per line."""
+        self.ensure_one()
+        money = self._telegram_money
+        esc = html.escape
         orders = self.order_ids.filtered(lambda o: o.state in ['paid', 'done', 'invoiced'])
-        total_sales = sum(orders.mapped('amount_total'))
-        total_orders = len(orders)
+        sales = sum(orders.mapped('amount_total'))
+        count = len(orders)
 
-        # Build message
-        msg = f"🏪 <b>تقرير جلسة نقطة البيع</b>\n"
-        msg += f"📋 {self.name}\n"
-        msg += f"{'─' * 25}\n\n"
+        def hour(value):
+            return fields.Datetime.context_timestamp(self, value).strftime('%H:%M') if value else '--:--'
 
-        # Session info
-        msg += f"👤 <b>الكاشير:</b> {self.user_id.name}\n"
-        msg += f"📍 <b>نقطة البيع:</b> {self.config_id.name}\n"
+        lines = [
+            f"🏪 <b>{esc(self.config_id.name)}</b>",
+            f"📋 {esc(self.name)} · 👤 {esc(self.user_id.name)}",
+            f"🕐 من {hour(self.start_at)} إلى {hour(self.stop_at)}",
+            "",
+            f"💰 <b>المبيعات: {money(sales)}</b>",
+            f"🧾 الطلبات: {count}" + (f" · المتوسط {money(sales / count)}" if count else ""),
+        ]
 
-        if self.start_at:
-            start_time = fields.Datetime.context_timestamp(self, self.start_at)
-            msg += f"🕐 <b>وقت البدء:</b> {start_time.strftime('%H:%M')}\n"
-        if self.stop_at:
-            stop_time = fields.Datetime.context_timestamp(self, self.stop_at)
-            msg += f"🕐 <b>وقت الإغلاق:</b> {stop_time.strftime('%H:%M')}\n"
+        # Payments, biggest first
+        payments = {}
+        for payment in orders.payment_ids:
+            method = payment.payment_method_id.name
+            payments[method] = payments.get(method, 0.0) + payment.amount
+        if payments:
+            lines += ["", "💳 <b>الدفع</b>"]
+            lines += [f"• {esc(method)}: {money(amount)}"
+                      for method, amount in sorted(payments.items(), key=lambda x: -x[1])]
 
-        msg += f"\n{'─' * 25}\n"
-        msg += f"💰 <b>إجمالي المبيعات:</b> {total_sales:,.2f} {symbol}\n"
-        msg += f"🧾 <b>عدد الطلبات:</b> {total_orders}\n"
-
-        if total_orders > 0:
-            avg_order = total_sales / total_orders
-            msg += f"📈 <b>متوسط الطلب:</b> {avg_order:,.2f} {symbol}\n"
-
-        # Order details
-        if orders:
-            msg += f"\n📝 <b>تفاصيل الطلبات:</b>\n"
-            for order in orders[:10]:  # Limit to 10 orders to avoid too long message
-                order_time = fields.Datetime.context_timestamp(self, order.date_order)
-                msg += f"  • {order.name}: {order.amount_total:,.2f} {symbol} ({order_time.strftime('%H:%M')})\n"
-
-            if len(orders) > 10:
-                msg += f"  ... و {len(orders) - 10} طلبات أخرى\n"
-
-        # Payment summary
-        if orders:
-            msg += f"\n💳 <b>طرق الدفع:</b>\n"
-            payments = {}
-            for order in orders:
-                for payment in order.payment_ids:
-                    method = payment.payment_method_id.name
-                    payments[method] = payments.get(method, 0) + payment.amount
-
-            if payments:
-                for method, amount in sorted(payments.items(), key=lambda x: -x[1]):
-                    msg += f"  • {method}: {amount:,.2f} {symbol}\n"
+        # Cash drawer: what should be there, what was counted, the difference
+        if self.config_id.cash_control:
+            moves = self._telegram_cash_moves()
+            cash_out = -sum(amount for _label, amount in moves if amount < 0)
+            cash_in = sum(amount for _label, amount in moves if amount > 0)
+            expected = self.cash_register_balance_end
+            counted = self.cash_register_balance_end_real
+            difference = counted - expected
+            lines += ["", "💵 <b>الصندوق</b>",
+                      f"• الافتتاح: {money(self.cash_register_balance_start)}"]
+            if cash_out:
+                lines.append(f"• المصاريف (سحب): {money(cash_out)}")
+                for label, amount in [m for m in moves if m[1] < 0][:8]:
+                    lines.append(f"   - {esc(label)}: {money(-amount)}")
+                if len([m for m in moves if m[1] < 0]) > 8:
+                    lines.append("   - …")
+            if cash_in:
+                lines.append(f"• إيداع: {money(cash_in)}")
+            lines += [f"• المتوقع: {money(expected)}", f"• المعدود: {money(counted)}"]
+            currency = self.currency_id or self.company_id.currency_id
+            if currency.is_zero(difference):
+                lines.append("✅ <b>لا يوجد فرق</b>")
+            elif difference < 0:
+                lines.append(f"🔴 <b>عجز: {money(-difference)}</b>")
             else:
-                msg += f"  • لا توجد مدفوعات\n"
+                lines.append(f"🟢 <b>زيادة: {money(difference)}</b>")
 
-        # Cancelled orders with their reason (empty orders are skipped)
+        # Cancelled orders (empty ones skipped): one line each
         cancelled = self.order_ids.filtered(lambda o: o.state == 'cancel' and o.lines)
         if cancelled:
-            msg += f"\n🚫 <b>الطلبات الملغاة ({len(cancelled)}):</b>\n"
-            for order in cancelled.sorted('date_order')[:15]:
+            lines += ["", f"🚫 <b>ملغاة ({len(cancelled)})</b>"]
+            for order in cancelled.sorted('date_order')[:10]:
                 info = order._telegram_cancel_info()
-                msg += f"  • #{info['ref']}"
-                if info['table']:
-                    msg += f" طاولة {info['table']}"
-                msg += f" — {order.amount_total:,.2f} {symbol} — {info['by']} ({info['time']})\n"
-                msg += f"    📝 {info['reason'] or 'لم يتم إدخال سبب'}\n"
-            if len(cancelled) > 15:
-                msg += f"  ... و {len(cancelled) - 15} طلبات أخرى\n"
+                where = f" ط{info['table']}" if info['table'] else ""
+                lines.append(f"• #{info['ref']}{where} {money(order.amount_total)} — {esc(info['by'] or '')}")
+                lines.append(f"   📝 {esc(info['reason'] or 'بدون سبب')}")
+            if len(cancelled) > 10:
+                lines.append(f"• … و {len(cancelled) - 10} أخرى")
 
-        msg += self._prepare_discount_section(orders, symbol)
-
-        # Cash control
-        if self.config_id.cash_control:
-            msg += f"\n💵 <b>النقدية:</b>\n"
-            msg += f"  • الافتتاحي: {self.cash_register_balance_start:,.2f} {symbol}\n"
-            msg += f"  • النهائي: {self.cash_register_balance_end_real:,.2f} {symbol}\n"
-            difference = self.cash_register_balance_end_real - self.cash_register_balance_end
-            if abs(difference) > 0.01:
-                msg += f"  • الفرق: {difference:,.2f} {symbol} ⚠️\n"
+        discount = self._prepare_discount_section(orders, None)
+        if discount:
+            lines += ["", discount]
 
         # Top products
         if self.company_id.telegram_pos_close_top_products and orders:
             product_sales = {}
-            for order in orders:
-                for line in order.lines:
-                    if line.product_id:
-                        product = line.product_id.name
-                        product_sales[product] = product_sales.get(product, 0) + line.qty
+            for line in orders.lines.filtered('product_id'):
+                product_sales[line.product_id.name] = product_sales.get(line.product_id.name, 0) + line.qty
+            top = sorted(product_sales.items(), key=lambda x: -x[1])[:self.company_id.telegram_pos_close_top_count or 5]
+            if top:
+                lines += ["", "🏆 <b>الأكثر مبيعاً</b>"]
+                lines += [f"{i}. {esc(name)} × {qty:,.0f}" for i, (name, qty) in enumerate(top, 1)]
 
-            if product_sales:
-                msg += f"\n🏆 <b>المنتجات الأكثر مبيعاً:</b>\n"
-                top_count = self.company_id.telegram_pos_close_top_count or 5
-                top_products = sorted(product_sales.items(), key=lambda x: -x[1])[:top_count]
-                for i, (product, qty) in enumerate(top_products, 1):
-                    msg += f"  {i}. {product}: {qty:,.0f}\n"
-
-        msg += f"\n{'─' * 25}\n"
-
-        if self.state == 'closed':
-            msg += f"✅ تم الإغلاق بنجاح"
-        else:
-            msg += f"📊 حالة الجلسة: {self.state}"
-
-        return msg
+        lines += ["", "✅ تم إغلاق الجلسة" if self.state == 'closed' else f"📊 الحالة: {self.state}"]
+        return '\n'.join(lines)
 
     def _compute_discount_entries(self, orders):
         """Discounted orders of the session: global discount (pos_discount
@@ -293,10 +287,10 @@ class PosSession(models.Model):
             return ''
         total = sum(e['total'] for e in entries)
         free = sum(1 for e in entries if e['free'])
-        msg = f"\n🏷 <b>الخصومات:</b> {total:,.0f} {symbol} — {len(entries)} طلب"
+        msg = f"🏷 <b>الخصومات: {self._telegram_money(total)}</b> · {len(entries)} طلب"
         if free:
-            msg += f" (منها {free} مجاني بالكامل)"
-        return msg + "\n  📊 التفاصيل في جدول الخصومات أدناه\n"
+            msg += f" ({free} مجاني)"
+        return msg + "\n📊 التفاصيل في الجدول أدناه"
 
     def _render_discount_table_image(self, entries, symbol):
         """Render the discount details as a JPEG table (Arabic, right to left)."""
