@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 import requests
 import base64
@@ -157,6 +158,44 @@ class TelegramService(models.AbstractModel):
 
         result = self._make_request('sendDocument', data=data, files=files)
         return bool(result)
+
+    def send_reply(self, chat_id, reply_to_message_id, text):
+        """Post ``text`` (plain text) in ``chat_id`` as a reply to message ``reply_to_message_id``.
+        Returns the Telegram message id of the reply (0 when unknown), so answers to it can be traced.
+
+        Through DoniaLink: POST /api/agents/telegram/reply; the platform only accepts chats linked
+        to this client (and company)."""
+        if not chat_id:
+            raise UserError(_('No Telegram chat to reply in.'))
+        if self._via_donialink():
+            if 'donialink.agent.platform' not in self.env:
+                raise UserError(_('Telegram is set to go through DoniaLink, but the DoniaLink Agent Connector '
+                                  'is not installed. Choose "Own Telegram bot" in Settings.'))
+            platform = self.env['donialink.agent.platform'].sudo()
+            token = platform._get('token')
+            if not token:
+                raise UserError(_('This database is not connected to the DoniaLink Platform.'))
+            try:
+                answer = platform._post('telegram/reply', {
+                    'company_id': self._company().id,
+                    'chat_id': str(chat_id),
+                    'reply_to_message_id': int(reply_to_message_id or 0),
+                    'text': text[:self.MESSAGE_LIMIT],
+                }, token=token)
+            except UserError:
+                raise
+            except Exception as e:
+                raise UserError(_('DoniaLink could not send the Telegram message: %s') % e) from e
+            if not answer.get('delivered'):
+                raise UserError(_('DoniaLink could not deliver the Telegram message: %s')
+                                % (answer.get('message') or _('unknown reason')))
+            return int(answer.get('message_id') or 0)
+        data = {'chat_id': chat_id, 'text': text[:self.MESSAGE_LIMIT]}
+        if reply_to_message_id:
+            data['reply_parameters'] = json.dumps({'message_id': int(reply_to_message_id),
+                                                   'allow_sending_without_reply': True})
+        result = self._make_request('sendMessage', data=data)
+        return int(((result or {}).get('result') or {}).get('message_id') or 0)
 
     def send_photo(self, image, filename, chat_id=None, caption=None):
         """Send an image (bytes) as a Telegram photo."""
