@@ -159,6 +159,22 @@ class TelegramService(models.AbstractModel):
         result = self._make_request('sendDocument', data=data, files=files)
         return bool(result)
 
+    def donialink_post(self, path, payload):
+        """POST ``payload`` to the DoniaLink Platform at /api/agents/<path> with this database's agent token
+        (owner cash box messages, replies, link codes...). Returns the platform's answer (a dict)."""
+        if 'donialink.agent.platform' not in self.env:
+            raise UserError(_('The DoniaLink Agent Connector is not installed.'))
+        platform = self.env['donialink.agent.platform'].sudo()
+        token = platform._get('token')
+        if not token:
+            raise UserError(_('This database is not connected to the DoniaLink Platform.'))
+        try:
+            return platform._post(path, payload, token=token)
+        except UserError:
+            raise
+        except Exception as e:
+            raise UserError(_('DoniaLink could not send the Telegram message: %s') % e) from e
+
     def send_reply(self, chat_id, reply_to_message_id, text):
         """Post ``text`` (plain text) in ``chat_id`` as a reply to message ``reply_to_message_id``.
         Returns the Telegram message id of the reply (0 when unknown), so answers to it can be traced.
@@ -168,24 +184,12 @@ class TelegramService(models.AbstractModel):
         if not chat_id:
             raise UserError(_('No Telegram chat to reply in.'))
         if self._via_donialink():
-            if 'donialink.agent.platform' not in self.env:
-                raise UserError(_('Telegram is set to go through DoniaLink, but the DoniaLink Agent Connector '
-                                  'is not installed. Choose "Own Telegram bot" in Settings.'))
-            platform = self.env['donialink.agent.platform'].sudo()
-            token = platform._get('token')
-            if not token:
-                raise UserError(_('This database is not connected to the DoniaLink Platform.'))
-            try:
-                answer = platform._post('telegram/reply', {
-                    'company_id': self._company().id,
-                    'chat_id': str(chat_id),
-                    'reply_to_message_id': int(reply_to_message_id or 0),
-                    'text': text[:self.MESSAGE_LIMIT],
-                }, token=token)
-            except UserError:
-                raise
-            except Exception as e:
-                raise UserError(_('DoniaLink could not send the Telegram message: %s') % e) from e
+            answer = self.donialink_post('telegram/reply', {
+                'company_id': self._company().id,
+                'chat_id': str(chat_id),
+                'reply_to_message_id': int(reply_to_message_id or 0),
+                'text': text[:self.MESSAGE_LIMIT],
+            })
             if not answer.get('delivered'):
                 raise UserError(_('DoniaLink could not deliver the Telegram message: %s')
                                 % (answer.get('message') or _('unknown reason')))
