@@ -82,7 +82,43 @@ class PosOrder(models.Model):
         company = orders[0].company_id.sudo()
         if not company.telegram_send_on_order_cancel:
             return
-        messages = [order._prepare_telegram_cancel_message() for order in orders]
+        self._telegram_send_order_alerts(company, [order._prepare_telegram_cancel_message() for order in orders])
+
+    def _telegram_order_edit_alert(self, logs):
+        """Lines reduced / removed from an open order with the reason (dev_pos_access_rights).
+        Sent with the cancelled orders setting, since it is the same kind of alert."""
+        self.ensure_one()
+        company = self.company_id.sudo()
+        if not logs or not company.telegram_send_on_order_cancel:
+            return
+        self._telegram_send_order_alerts(company, [self._prepare_telegram_edit_message(logs)])
+
+    def _prepare_telegram_edit_message(self, logs):
+        self.ensure_one()
+        esc = lambda value: html.escape(value or '', quote=False)
+        info = self._telegram_cancel_info()
+        symbol = self.currency_id.symbol or self.currency_id.name
+        log = logs[0]
+        msg = "✂️ <b>تعديل طلب مفتوح</b>\n"
+        msg += f"📋 <b>الطلب:</b> #{info['ref']}"
+        if info['table']:
+            msg += f" — طاولة {info['table']}"
+        msg += "\n"
+        msg += f"👤 <b>بواسطة:</b> {esc(log.edited_by) or info['by']}\n"
+        msg += f"🕐 <b>الوقت:</b> {fields.Datetime.context_timestamp(self, log.date).strftime('%H:%M')}\n"
+        msg += "🧾 <b>المنتجات:</b>\n"
+        for item in logs:
+            action = "حذف" if not item.qty_after else f"{item.qty_before:g} ← {item.qty_after:g}"
+            msg += f"  • {esc(item.product_name)}: {action} (−{item.qty_removed:g}, {item.amount:,.2f} {symbol})\n"
+        reasons = {item.reason for item in logs if item.reason}
+        msg += f"📝 <b>السبب:</b> {esc(' / '.join(reasons)) or 'لم يتم إدخال سبب'}\n"
+        msg += f"📍 {esc(self.config_id.name)}"
+        return msg
+
+    def _telegram_send_order_alerts(self, company, messages):
+        """Send order alerts (cancelled / edited orders) to Telegram once the transaction is committed."""
+        if not messages:
+            return
         if company.telegram_delivery == 'donialink':
             # through the platform, after the commit (with its own cursor: this one is closed by then)
             dbname, uid, company_id = self.env.cr.dbname, self.env.uid, company.id
@@ -96,7 +132,7 @@ class PosOrder(models.Model):
                         for text in messages:
                             service.send_message(text)
                 except Exception:
-                    _logger.exception("Telegram cancel notification through DoniaLink failed (%s)", dbname)
+                    _logger.exception("Telegram order alert through DoniaLink failed (%s)", dbname)
 
             self.env.cr.postcommit.add(send_through_donialink)
             return
@@ -112,10 +148,10 @@ class PosOrder(models.Model):
                         'chat_id': chat_id, 'text': text, 'parse_mode': 'HTML',
                     }, timeout=15)
                     if not response.json().get('ok'):
-                        _logger.error("Telegram cancel notification failed: %s", response.text[:300])
+                        _logger.error("Telegram order alert failed: %s", response.text[:300])
                 except Exception as e:
-                    _logger.error("Telegram cancel notification failed: %s", e)
+                    _logger.error("Telegram order alert failed: %s", e)
 
-        # Only after the cancellation is committed (nothing is sent if it is
-        # rolled back), and in a thread so the POS doesn't wait for Telegram.
+        # Only after the change is committed (nothing is sent if it is rolled back),
+        # and in a thread so the POS doesn't wait for Telegram.
         self.env.cr.postcommit.add(lambda: threading.Thread(target=send, daemon=True).start())
