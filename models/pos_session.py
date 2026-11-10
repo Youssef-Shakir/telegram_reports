@@ -26,14 +26,7 @@ class PosSession(models.Model):
         self.ensure_one()
 
         try:
-            message = self._prepare_session_summary_message()
-            telegram = self._telegram()
-            telegram.send_message(message)
-            self._send_discount_table()
-
-            # Also send PDF if enabled
-            self._send_session_pdf_report()
-
+            self._send_session_report()
             self.telegram_sent = True
 
             return {
@@ -47,6 +40,40 @@ class PosSession(models.Model):
             }
         except Exception as e:
             raise UserError(_('Failed to send: %s') % str(e))
+
+    def _send_session_report(self):
+        """The closing report. Through the DoniaLink Platform (its app): ONE message, the summary with the
+        discounted orders listed in it and the sales PDF attached. With an own bot: the summary, the discount
+        table picture and the PDF, as before."""
+        self.ensure_one()
+        telegram = self._telegram()
+        if telegram._via_donialink():
+            pdf = self._session_pdf_content()
+            return telegram.send_with_document(
+                self._prepare_session_summary_message(single=True), document=pdf,
+                filename=f"POS_Sales_{self.name}.pdf" if pdf else None)
+        telegram.send_message(self._prepare_session_summary_message())
+        self._send_discount_table()
+        self._send_session_pdf_report()
+        return True
+
+    def _session_pdf_data(self):
+        return {
+            'date_start': self.start_at,
+            'date_stop': self.stop_at or fields.Datetime.now(),
+            'config_ids': [self.config_id.id],
+        }
+
+    def _session_pdf_content(self):
+        """The sales PDF of the session when the company sends it, else None (a failure never stops the
+        message)."""
+        if not self.company_id.telegram_pos_close_send_pdf:
+            return None
+        try:
+            return self._telegram()._render_pos_sale_details_pdf(self, self._session_pdf_data())
+        except Exception as e:  # noqa: BLE001
+            _logger.error("Failed to build the PDF of session %s: %s", self.name, e)
+            return None
 
     def _send_session_pdf_report(self):
         """Send POS session PDF report to Telegram."""
@@ -97,16 +124,8 @@ class PosSession(models.Model):
             return False
 
         try:
-            # Send text summary
-            message = self._prepare_session_summary_message()
-            telegram = self._telegram()
-            telegram.send_message(message)
-            _logger.info("Sent Telegram text summary for POS session: %s", self.name)
-            self._send_discount_table()
-
-            # Send PDF report if enabled
-            self._send_session_pdf_report()
-
+            self._send_session_report()
+            _logger.info("Sent Telegram summary for POS session: %s", self.name)
             self.telegram_sent = True
             return True
 
@@ -132,8 +151,9 @@ class PosSession(models.Model):
             moves.append((label[len(prefix):].split('-', 1)[-1] or label, line.amount))
         return moves
 
-    def _prepare_session_summary_message(self):
-        """Session summary, short enough to read on a phone: key figures first, one fact per line."""
+    def _prepare_session_summary_message(self, single=False):
+        """Session summary, short enough to read on a phone: key figures first, one fact per line.
+        ``single``: everything in this one message (the discounted orders are listed, no table picture)."""
         self.ensure_one()
         money = self._telegram_money
         esc = html.escape
@@ -202,7 +222,7 @@ class PosSession(models.Model):
             if len(cancelled) > 10:
                 lines.append(f"• … و {len(cancelled) - 10} أخرى")
 
-        discount = self._prepare_discount_section(orders, None)
+        discount = self._prepare_discount_section(orders, None, listed=single)
         if discount:
             lines += ["", discount]
 
@@ -280,8 +300,9 @@ class PosSession(models.Model):
             })
         return sorted(entries, key=lambda e: -e['total'])
 
-    def _prepare_discount_section(self, orders, symbol):
-        """One line in the text message; the details go in the table image."""
+    def _prepare_discount_section(self, orders, symbol, listed=False):
+        """One line in the text message; the details go in the table image, or (``listed``) are listed
+        here, biggest first."""
         entries = self._compute_discount_entries(orders)
         if not entries:
             return ''
@@ -290,7 +311,25 @@ class PosSession(models.Model):
         msg = f"🏷 <b>الخصومات: {self._telegram_money(total)}</b> · {len(entries)} طلب"
         if free:
             msg += f" ({free} مجاني)"
-        return msg + "\n📊 التفاصيل في الجدول أدناه"
+        if not listed:
+            return msg + "\n📊 التفاصيل في الجدول أدناه"
+        esc = html.escape
+        lines = [msg]
+        for e in entries[:15]:
+            where = f" ط{esc(e['table'])}" if e['table'] else ""
+            pct = f" ({e['total'] / e['before'] * 100:.0f}%)" if e['before'] else ""
+            who = f" — {esc(e['employee'])}" if e['employee'] else ""
+            tag = " 🎁" if e['free'] else ""
+            lines.append(f"• #{esc(e['ref'])}{where} {self._telegram_money(e['total'])}{pct}{tag}{who}")
+            items = [f"{esc(i['name'])} ×{i['qty']:g} {i['percent']:g}%" for i in e['items'][:3]]
+            if items:
+                lines.append(f"   {' · '.join(items)}")
+            note = e['global_note'] or e['order_note'] or next((i['note'] for i in e['items'] if i['note']), '')
+            if note:
+                lines.append(f"   📝 {esc(note)}")
+        if len(entries) > 15:
+            lines.append(f"• … و {len(entries) - 15} أخرى")
+        return '\n'.join(lines)
 
     def _render_discount_table_image(self, entries, symbol):
         """Render the discount details as a JPEG table (Arabic, right to left)."""

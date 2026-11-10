@@ -245,6 +245,46 @@ class TelegramService(models.AbstractModel):
 
         return self.send_document(pdf_content, filename, chat_id=chat_id, caption=caption)
 
+    def send_with_document(self, text, document=None, filename=None):
+        """One message: ``text`` with an optional file. Through the DoniaLink Platform it is one message (its
+        app shows the text with the file attached); with an own bot, the text then the file."""
+        if self._via_donialink():
+            result = self._send_through_donialink_message(text, document, filename)
+            return bool(result)
+        self.send_message(text)
+        if document:
+            self.send_document(document, filename)
+        return True
+
+    def _send_through_donialink_message(self, text, document=None, filename=None):
+        if 'donialink.agent.platform' not in self.env:
+            raise UserError(_('Telegram is set to go through DoniaLink, but the DoniaLink Agent Connector is not '
+                              'installed. Choose "Own Telegram bot" in Settings.'))
+        kind = self.env.context.get('telegram_kind') or self.DEFAULT_KIND
+        try:
+            answer = self.env['donialink.agent.platform'].sudo()._send_telegram(
+                kind, text=text, document=document, filename=filename, company=self._company())
+        except UserError:
+            raise
+        except Exception as e:
+            raise UserError(_('DoniaLink could not send the Telegram message: %s') % e) from e
+        if not answer.get('delivered') and answer.get('message'):
+            _logger.warning("DoniaLink Telegram (%s): %s", kind, answer['message'])
+        return {'ok': True, 'result': answer}
+
+    def _render_pos_sale_details_pdf(self, session, data):
+        """PDF bytes of the POS Sale Details report (data-driven: dates and points of sale)."""
+        report = self.env.ref('point_of_sale.sale_details_report', raise_if_not_found=False)
+        if not report:
+            raise UserError(_('POS Sale Details report not found'))
+        try:
+            pdf_content, _content_type = self.env['ir.actions.report']._render_qweb_pdf(
+                report.report_name, [], data=data)
+        except Exception as e:
+            _logger.error("Failed to generate POS Sale Details PDF: %s", str(e))
+            raise UserError(_('Failed to generate PDF: %s') % str(e))
+        return pdf_content
+
     def send_pos_sale_details_report(self, session, data, chat_id=None, caption=None, filename=None):
         """Send POS sale details report as PDF to Telegram.
 
