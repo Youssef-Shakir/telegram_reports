@@ -42,16 +42,10 @@ class PosSession(models.Model):
             raise UserError(_('Failed to send: %s') % str(e))
 
     def _send_session_report(self):
-        """The closing report. Through the DoniaLink Platform (its app): ONE message, the summary with the
-        discounted orders listed in it and the sales PDF attached. With an own bot: the summary, the discount
-        table picture and the PDF, as before."""
+        """The closing report on Telegram (own bot): the summary, the discount table picture and the PDF. The
+        DoniaLink App gets it as one message (dl_app_alerts)."""
         self.ensure_one()
         telegram = self._telegram()
-        if telegram._via_donialink():
-            pdf = self._session_pdf_content()
-            return telegram.send_with_document(
-                self._prepare_session_summary_message(single=True), document=pdf,
-                filename=f"POS_Sales_{self.name}.pdf" if pdf else None)
         telegram.send_message(self._prepare_session_summary_message())
         self._send_discount_table()
         self._send_session_pdf_report()

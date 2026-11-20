@@ -5,7 +5,7 @@ import threading
 
 import requests
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 from .telegram_service import TELEGRAM_API_URL
 
@@ -119,24 +119,9 @@ class PosOrder(models.Model):
         """Send order alerts (cancelled / edited orders) to Telegram once the transaction is committed."""
         if not messages:
             return
-        if company.telegram_delivery == 'donialink':
-            # through the platform, after the commit (with its own cursor: this one is closed by then)
-            dbname, uid, company_id = self.env.cr.dbname, self.env.uid, company.id
-
-            def send_through_donialink():
-                try:
-                    with self.env.registry.cursor() as cr:
-                        env = api.Environment(cr, uid, {})
-                        service = env['telegram.service'].with_company(company_id).with_context(
-                            telegram_kind='pos_session')
-                        for text in messages:
-                            service.send_message(text)
-                except Exception:
-                    _logger.exception("Telegram order alert through DoniaLink failed (%s)", dbname)
-
-            self.env.cr.postcommit.add(send_through_donialink)
-            return
-        token, chat_id = company.telegram_bot_token, company.telegram_default_chat_id
+        company = company.sudo()
+        token = company.telegram_bot_token
+        chat_id = (company.telegram_chat_pos or company.telegram_default_chat_id or '').strip()
         if not token or not chat_id:
             return
 

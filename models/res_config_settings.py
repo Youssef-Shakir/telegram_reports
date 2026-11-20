@@ -7,11 +7,15 @@ class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     # Per company (the company chosen at the top of Settings)
-    telegram_delivery = fields.Selection(related='company_id.telegram_delivery', readonly=False)
+    telegram_enabled = fields.Boolean(related='company_id.telegram_enabled', readonly=False)
     telegram_bot_token = fields.Char(related='company_id.telegram_bot_token', readonly=False,
                                      help='Telegram Bot Token from @BotFather')
     telegram_default_chat_id = fields.Char(related='company_id.telegram_default_chat_id', readonly=False,
                                            help='Default Telegram Chat ID or Group ID')
+    telegram_chat_pos = fields.Char(related='company_id.telegram_chat_pos', readonly=False)
+    telegram_chat_summary = fields.Char(related='company_id.telegram_chat_summary', readonly=False)
+    telegram_chat_reports = fields.Char(related='company_id.telegram_chat_reports', readonly=False)
+    telegram_chat_order_now = fields.Char(related='company_id.telegram_chat_order_now', readonly=False)
     telegram_send_on_pos_close = fields.Boolean(related='company_id.telegram_send_on_pos_close', readonly=False,
                                                 help='Automatically send sales summary when POS session is closed')
     telegram_pos_close_top_products = fields.Boolean(related='company_id.telegram_pos_close_top_products',
@@ -23,9 +27,6 @@ class ResConfigSettings(models.TransientModel):
     telegram_order_now = fields.Boolean(related='company_id.telegram_order_now', readonly=False)
     telegram_order_now_time = fields.Float(related='company_id.telegram_order_now_time', readonly=False)
     telegram_order_now_available = fields.Boolean(compute='_compute_telegram_order_now_available')
-    # DoniaLink Agent Connector installed and connected to the platform
-    telegram_donialink_available = fields.Boolean(compute='_compute_telegram_donialink_available')
-
     # Computed
     telegram_report_count = fields.Integer(
         string='Scheduled Reports',
@@ -51,11 +52,6 @@ class ResConfigSettings(models.TransientModel):
                 ('active', '=', True), ('company_id', '=', record.company_id.id)
             ])
 
-    def _compute_telegram_donialink_available(self):
-        platform = self.env['donialink.agent.platform'] if 'donialink.agent.platform' in self.env else None
-        for record in self:
-            record.telegram_donialink_available = bool(platform is not None and platform.sudo()._telegram_ready())
-
     def _compute_telegram_order_now_available(self):
         for record in self:
             record.telegram_order_now_available = self.env['telegram.order.now']._available()
@@ -69,7 +65,7 @@ class ResConfigSettings(models.TransientModel):
             'message': _('Sent to Telegram.') if sent else _('Nothing to order today: nothing was sent.')}}
 
     def action_test_telegram_connection(self):
-        """Test the Telegram bot connection (or the DoniaLink route)."""
+        """Test the bot token and the main group (what is typed, even before saving)."""
         self.ensure_one()
 
         telegram = self.env['telegram.service'].with_company(self.company_id)

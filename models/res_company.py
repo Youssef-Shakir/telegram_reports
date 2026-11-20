@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 
 
 class ResCompany(models.Model):
-    """Telegram settings per company: each branch can have its own bot and chat, or send through DoniaLink."""
+    """Telegram per company: optional, through the company's own bot. Every alert always goes to the DoniaLink
+    App; Telegram is a copy for the groups that still want it."""
     _inherit = 'res.company'
 
-    telegram_delivery = fields.Selection([
-        ('bot', 'Own Telegram bot'),
-        ('donialink', 'Through DoniaLink'),
-    ], string='Telegram Delivery', default='bot', required=True,
-        help="Own Telegram bot: this company's bot token and chat.\n"
-             "Through DoniaLink: messages go to the DoniaLink Platform (DoniaLink Agent Connector, connected), "
-             "which sends them to the groups set there for each kind of message.")
+    telegram_enabled = fields.Boolean(
+        'Also Send to Telegram', default=False,
+        help='Off: alerts only go to the DoniaLink App. On: also to the Telegram groups below, with the bot token.')
     telegram_bot_token = fields.Char('Telegram Bot Token', groups='base.group_system')
-    telegram_default_chat_id = fields.Char('Telegram Default Chat ID')
+    telegram_default_chat_id = fields.Char('Telegram Group', help='Chat id of the group that gets every alert '
+                                                                  '(unless a group is set for its kind).')
+    telegram_chat_pos = fields.Char('Group for POS Sessions & Orders',
+                                    help='Session closing reports, cancelled and edited orders. Empty: the main group.')
+    telegram_chat_summary = fields.Char('Group for Summaries',
+                                        help='Daily and financial summaries. Empty: the main group.')
+    telegram_chat_reports = fields.Char('Group for Scheduled Reports', help='Empty: the main group.')
+    telegram_chat_order_now = fields.Char('Group for Order Now', help='Empty: the main group.')
     telegram_send_on_pos_close = fields.Boolean('Telegram: Send on POS Session Close')
     telegram_pos_close_top_products = fields.Boolean('Telegram: Include Top Products', default=True)
     telegram_pos_close_top_count = fields.Integer('Telegram: Top Products Count', default=5)
@@ -28,10 +31,7 @@ class ResCompany(models.Model):
                                                 'to order.')
     telegram_order_now_last = fields.Date('Telegram: Order Now Last Sent', readonly=True)
 
-    @api.constrains('telegram_delivery')
-    def _check_telegram_delivery(self):
-        if 'donialink.agent.platform' in self.env:
-            return
-        if any(company.telegram_delivery == 'donialink' for company in self):
-            raise ValidationError(_('To send through DoniaLink, install the DoniaLink Agent Connector first '
-                                    '(or choose "Own Telegram bot").'))
+    def _telegram_off(self):
+        """Nothing goes to Telegram for this company (the DoniaLink App still gets everything)."""
+        company = self.sudo()
+        return not (company.telegram_enabled and company.telegram_bot_token)

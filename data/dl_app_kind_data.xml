@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- DoniaLink App: one kind per Odoo alert; choose the recipients in DoniaLink App > Kinds -->
+    <record id="kind_pos_session" model="donialink.app.kind">
+        <field name="code">pos_session</field>
+        <field name="name">POS session closed</field>
+        <field name="description">Closing report of each POS session with its sales PDF</field>
+        <field name="icon">report</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="kind_pos_order_alert" model="donialink.app.kind">
+        <field name="code">pos_order_alert</field>
+        <field name="name">Cancelled and edited orders</field>
+        <field name="description">Orders cancelled, or open orders reduced, with the reason</field>
+        <field name="icon">alert</field>
+        <field name="sequence">21</field>
+    </record>
+    <record id="kind_daily_summary" model="donialink.app.kind">
+        <field name="code">daily_summary</field>
+        <field name="name">Daily summary</field>
+        <field name="description">Sales summary of the day</field>
+        <field name="icon">chart</field>
+        <field name="sequence">22</field>
+    </record>
+    <record id="kind_finance_summary" model="donialink.app.kind">
+        <field name="code">finance_summary</field>
+        <field name="name">Financial summary</field>
+        <field name="description">Profit and loss and financial reports</field>
+        <field name="icon">chart</field>
+        <field name="sequence">23</field>
+    </record>
+    <record id="kind_scheduled_report" model="donialink.app.kind">
+        <field name="code">scheduled_report</field>
+        <field name="name">Scheduled reports</field>
+        <field name="description">Reports sent on a schedule from Odoo</field>
+        <field name="icon">report</field>
+        <field name="sequence">24</field>
+    </record>
+    <record id="kind_order_now" model="donialink.app.kind">
+        <field name="code">order_now</field>
+        <field name="name">Order now (stock)</field>
+        <field name="description">What to order from suppliers</field>
+        <field name="icon">box</field>
+        <field name="sequence">25</field>
+    </record>
+</odoo>

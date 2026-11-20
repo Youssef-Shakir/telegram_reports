@@ -8,46 +8,38 @@
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
                 <app data-string="Telegram Reports" string="Telegram Reports" name="telegram_reports">
-                    <block title="Delivery" name="telegram_delivery">
-                        <setting string="How messages are sent" company_dependent="1"
-                                 help="Per company: its own Telegram bot, or through DoniaLink (the platform's bot sends each kind of message to the groups set there: e.g. session closing to the manager, P&amp;L to the owners).">
-                            <field name="telegram_donialink_available" invisible="1"/>
-                            <field name="telegram_delivery" widget="radio"/>
-                            <div class="mt8" invisible="telegram_delivery == 'bot'">
-                                <button name="action_test_telegram_connection" type="object" string="Test"
-                                        class="btn-link" icon="fa-check"/>
-                            </div>
-                            <div class="text-warning mt8" invisible="telegram_delivery == 'bot' or telegram_donialink_available">
-                                The DoniaLink Agent Connector is not installed or not connected: messages can't go through DoniaLink until it is.
-                            </div>
+                    <block title="Telegram" name="telegram_delivery">
+                        <setting string="Also send to Telegram" company_dependent="1"
+                                 help="Every alert always goes to the DoniaLink App. On: a copy also goes to Telegram, through your own bot.">
+                            <field name="telegram_enabled"/>
                         </setting>
-                    </block>
-
-                    <block title="Telegram Bot Configuration" name="telegram_bot_settings" invisible="telegram_delivery == 'donialink'">
-                        <setting string="Bot Token" help="Get your bot token from @BotFather on Telegram">
-                            <div class="content-group">
-                                <div class="row mt16">
-                                    <label for="telegram_bot_token" class="col-lg-3"/>
-                                    <field name="telegram_bot_token" class="col-lg-6" password="True"/>
-                                </div>
-                            </div>
+                        <setting string="Bot token" company_dependent="1" invisible="not telegram_enabled"
+                                 help="From @BotFather on Telegram. Add the bot to your groups.">
+                            <field name="telegram_bot_token" password="True" placeholder="123456:ABC-DEF…"/>
                         </setting>
-                        <setting string="Default Chat ID" help="The default chat or group to send reports to">
-                            <div class="content-group">
-                                <div class="row mt16">
-                                    <label for="telegram_default_chat_id" class="col-lg-3"/>
-                                    <field name="telegram_default_chat_id" class="col-lg-6"/>
+                        <setting string="Group" company_dependent="1" invisible="not telegram_enabled"
+                                 help="Chat id of the group that gets every alert. Optionally, one group per kind: an empty one uses this group.">
+                            <field name="telegram_default_chat_id" placeholder="-1001234567890"/>
+                            <div class="content-group mt8">
+                                <div class="row">
+                                    <label for="telegram_chat_pos" class="col-lg-5 o_light_label"/>
+                                    <field name="telegram_chat_pos" class="col-lg-6"/>
                                 </div>
-                                <div class="row mt8">
-                                    <div class="col-lg-12">
-                                        <button name="action_test_telegram_connection"
-                                                type="object"
-                                                string="Test Connection"
-                                                class="btn-primary"
-                                                icon="fa-paper-plane"/>
-                                    </div>
+                                <div class="row">
+                                    <label for="telegram_chat_summary" class="col-lg-5 o_light_label"/>
+                                    <field name="telegram_chat_summary" class="col-lg-6"/>
+                                </div>
+                                <div class="row">
+                                    <label for="telegram_chat_reports" class="col-lg-5 o_light_label"/>
+                                    <field name="telegram_chat_reports" class="col-lg-6"/>
+                                </div>
+                                <div class="row" invisible="not telegram_order_now_available">
+                                    <label for="telegram_chat_order_now" class="col-lg-5 o_light_label"/>
+                                    <field name="telegram_chat_order_now" class="col-lg-6"/>
                                 </div>
                             </div>
+                            <button name="action_test_telegram_connection" type="object" string="Test"
+                                    class="btn-link mt8" icon="fa-paper-plane"/>
                         </setting>
                     </block>
 
@@ -126,7 +118,7 @@
                         </setting>
                     </block>
 
-                    <block title="Setup Instructions" name="telegram_help">
+                    <block title="Setup Instructions" name="telegram_help" invisible="not telegram_enabled">
                         <setting string="How to Setup">
                             <div class="content-group">
                                 <div class="mt16 text-muted">

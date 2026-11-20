@@ -1,119 +1,100 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# * telegram_reports
+# 	* telegram_reports
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 18.0-20251106\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-01 00:00+0000\n"
-"PO-Revision-Date: 2024-01-01 00:00+0000\n"
-"Last-Translator: Yousif Shakir\n"
-"Language-Team: Arabic\n"
+"POT-Creation-Date: 2026-11-19 14:55+0000\n"
+"PO-Revision-Date: 2026-11-19 14:55+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: telegram_reports
-#: model:ir.model,name:telegram_reports.model_telegram_report_schedule
-msgid "Telegram Report Schedule"
-msgstr "جدولة تقارير تيليجرام"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "-1001234567890"
+msgstr ""
 
 #. module: telegram_reports
-#: model:ir.model,name:telegram_reports.model_telegram_service
-msgid "Telegram Service"
-msgstr "خدمة تيليجرام"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "123456:ABC-DEF…"
+msgstr ""
 
 #. module: telegram_reports
-#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_root
-msgid "Telegram Reports"
-msgstr "تقارير تيليجرام"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "<strong>1. Create a Telegram Bot:</strong>"
+msgstr "<strong>1. أنشئ بوت تيليجرام:</strong>"
 
 #. module: telegram_reports
-#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_schedules
-msgid "Report Schedules"
-msgstr "جدولة التقارير"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "<strong>2. Get your Chat ID:</strong>"
+msgstr "<strong>2. احصل على معرّف المحادثة:</strong>"
 
 #. module: telegram_reports
-#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_config
-msgid "Configuration"
-msgstr "الإعدادات"
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__active
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__active
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_search
+msgid "Active"
+msgstr ""
 
 #. module: telegram_reports
-#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_settings
-msgid "Settings"
-msgstr "الإعدادات"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Add your bot to a group or start a chat with it"
+msgstr "أضف البوت إلى مجموعة أو ابدأ محادثة معه"
 
 #. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__name
-msgid "Name"
-msgstr "الاسم"
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_enabled
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_enabled
+msgid "Also Send to Telegram"
+msgstr "إرسال نسخة إلى تيليجرام أيضاً"
 
 #. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__report_id
-msgid "Report"
-msgstr "التقرير"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Also send to Telegram"
+msgstr "إرسال نسخة إلى تيليجرام أيضاً"
 
 #. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_type
-msgid "Schedule"
-msgstr "الجدولة"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Automated Reports"
+msgstr "التقارير التلقائية"
 
 #. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__manual
-msgid "Manual Only"
-msgstr "يدوي فقط"
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_send_on_pos_close
+msgid "Automatically send sales summary when POS session is closed"
+msgstr "إرسال ملخص المبيعات تلقائياً عند إغلاق جلسة نقطة البيع"
 
 #. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__daily
-msgid "Daily"
-msgstr "يومي"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Automatically send summary when POS session is closed"
+msgstr "إرسال الملخص تلقائياً عند إغلاق جلسة نقطة البيع"
 
 #. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__weekly
-msgid "Weekly"
-msgstr "أسبوعي"
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Bot token"
+msgstr "توكن البوت"
 
 #. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__monthly
-msgid "Monthly"
-msgstr "شهري"
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Bot token not configured"
+msgstr "لم يتم إعداد توكن البوت"
 
 #. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_time
-msgid "Send Time"
-msgstr "وقت الإرسال"
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Bot token valid but cannot send to chat: %s"
+msgstr ""
 
 #. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_day_of_week
-msgid "Day of Week"
-msgstr "يوم الأسبوع"
-
-#. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_day_of_month
-msgid "Day of Month"
-msgstr "يوم الشهر"
-
-#. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__last_sent
-msgid "Last Sent"
-msgstr "آخر إرسال"
-
-#. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__next_scheduled
-msgid "Next Scheduled"
-msgstr "الموعد التالي"
-
-#. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__send_count
-msgid "Send Count"
-msgstr "عدد مرات الإرسال"
-
-#. module: telegram_reports
-#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__chat_id
-msgid "Chat ID"
-msgstr "معرف المحادثة"
+#: model:donialink.app.kind,name:telegram_reports.kind_pos_order_alert
+msgid "Cancelled and edited orders"
+msgstr "الطلبات الملغاة والمعدّلة"
 
 #. module: telegram_reports
 #: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__caption_template
@@ -121,14 +102,1159 @@ msgid "Caption Template"
 msgstr "قالب التسمية التوضيحية"
 
 #. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__caption_template
+msgid ""
+"Caption template. Available variables: {report_name}, {date}, {record_count}"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__chat_id
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__chat_id
+msgid "Chat ID"
+msgstr "معرف المحادثة"
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Chat ID not configured"
+msgstr "لم يتم إعداد معرف المحادثة"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_company__telegram_default_chat_id
+msgid ""
+"Chat id of the group that gets every alert (unless a group is set for its "
+"kind)."
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid ""
+"Chat id of the group that gets every alert. Optionally, one group per kind: "
+"an empty one uses this group."
+msgstr "معرّف المجموعة التي تستلم كل التنبيهات. ويمكن تحديد مجموعة لكل نوع، والحقل الفارغ يستخدم هذه المجموعة."
+
+#. module: telegram_reports
+#: model:donialink.app.kind,description:telegram_reports.kind_pos_session
+msgid "Closing report of each POS session with its sales PDF"
+msgstr "تقرير إغلاق كل جلسة نقطة بيع مع ملف PDF للمبيعات"
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_res_company
+msgid "Companies"
+msgstr "الشركات"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__company_id
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__company_id
+msgid "Company"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_res_config_settings
+msgid "Config Settings"
+msgstr "تهيئة الإعدادات "
+
+#. module: telegram_reports
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_config
+msgid "Configuration"
+msgstr "الإعدادات"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Configure Daily Summaries"
+msgstr "إعداد الملخصات اليومية"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Configure Report Schedules"
+msgstr "إعداد جدولة التقارير"
+
+#. module: telegram_reports
+#: model_terms:ir.actions.act_window,help:telegram_reports.telegram_report_schedule_action
+msgid "Configure which Odoo reports to automatically send via Telegram."
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Connected successfully! Bot: @%s"
+msgstr "تم الاتصال بنجاح! البوت: @%s"
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Connection failed: %s"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Copy the Bot Token provided"
+msgstr "انسخ توكن البوت الذي يظهر لك"
+
+#. module: telegram_reports
+#: model_terms:ir.actions.act_window,help:telegram_reports.telegram_report_schedule_action
+msgid "Create your first scheduled report!"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.actions.act_window,help:telegram_reports.telegram_daily_summary_action
+msgid "Create your first scheduled summary!"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__create_uid
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__create_date
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__pnl_period__current_month
+msgid "Current Month"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__pnl_period__current_year
+msgid "Current Year"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__date_range_type__custom
+msgid "Custom Range"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__summary_type__custom
+msgid "Custom Summary"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_daily_summary.py:0
+msgid "Custom summary not implemented yet"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_frequency__daily
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__daily
+msgid "Daily"
+msgstr "يومي"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Daily Order Now list"
+msgstr "قائمة «اطلب الآن» اليومية"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_summary_count
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Daily Summaries"
+msgstr "الملخصات اليومية"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+msgid "Daily Summary"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_company__telegram_chat_summary
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_chat_summary
+msgid "Daily and financial summaries. Empty: the main group."
+msgstr "الملخصات اليومية والمالية. فارغ: المجموعة الرئيسية."
+
+#. module: telegram_reports
+#: model:donialink.app.kind,name:telegram_reports.kind_daily_summary
+msgid "Daily summary"
+msgstr "الملخص اليومي"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__date_from
+msgid "Date From"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__date_range_type
+msgid "Date Range"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__date_to
+msgid "Date To"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__schedule_day_of_month
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_day_of_month
+msgid "Day of Month"
+msgstr "يوم الشهر"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__schedule_day_of_week
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_day_of_week
+msgid "Day of Week"
+msgstr "يوم الأسبوع"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_daily_summary__schedule_day_of_month
+msgid "Day of month to send (1-28). For monthly schedule."
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__schedule_day_of_month
+msgid "Day of month to send (1-28). Use 1 for first day."
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_default_chat_id
+msgid "Default Telegram Chat ID or Group ID"
+msgstr "معرّف المحادثة أو المجموعة الافتراضي في تيليجرام"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__display_name
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__domain
+msgid ""
+"Domain filter to select records. Use [] for all records. Example: [('state',"
+" '=', 'posted')]"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_donialink_app_message
+msgid "DoniaLink App: Message"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_company__telegram_chat_order_now
+#: model:ir.model.fields,help:telegram_reports.field_res_company__telegram_chat_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_chat_order_now
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_chat_reports
+msgid "Empty: the main group."
+msgstr "فارغ: المجموعة الرئيسية."
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid ""
+"Every alert always goes to the DoniaLink App. On: a copy also goes to "
+"Telegram, through your own bot."
+msgstr "كل تنبيه يصل دائماً إلى تطبيق دنيا لينك. عند التفعيل تُرسل نسخة إلى تيليجرام أيضاً عبر البوت الخاص بك."
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Failed to generate PDF: %s"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_report_schedule.py:0
+msgid "Failed to send report. Check Telegram configuration."
+msgstr "فشل إرسال التقرير. تحقق من إعدادات تيليجرام."
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_report_schedule.py:0
+msgid "Failed to send report: %s"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/pos_session.py:0
+msgid "Failed to send: %s"
+msgstr ""
+
+#. module: telegram_reports
 #: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__domain
 msgid "Filter Domain"
 msgstr "فلتر التصفية"
 
 #. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__report_mode__financial
+msgid "Financial Report (date range)"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Financial Report Settings"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__account_report_id
+msgid "Financial Report Type"
+msgstr ""
+
+#. module: telegram_reports
+#: model:donialink.app.kind,name:telegram_reports.kind_finance_summary
+msgid "Financial summary"
+msgstr "الملخص المالي"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Find the \"chat\":{\"id\": YOUR_CHAT_ID} in the response"
+msgstr "ابحث عن \"chat\":{\"id\": YOUR_CHAT_ID} في الرد"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__date_from
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__date_to
+msgid "For custom date range"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_daily_summary__schedule_day_of_week
+msgid "For weekly schedule"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__schedule_frequency
+msgid "Frequency"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_day_of_week__4
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__4
+msgid "Friday"
+msgstr "الجمعة"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "From @BotFather on Telegram. Add the bot to your groups."
+msgstr "من @BotFather في تيليجرام. أضف البوت إلى مجموعاتك."
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Group"
+msgstr "المجموعة"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_chat_order_now
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_chat_order_now
+msgid "Group for Order Now"
+msgstr "مجموعة «اطلب الآن»"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_chat_pos
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_chat_pos
+msgid "Group for POS Sessions & Orders"
+msgstr "مجموعة جلسات نقطة البيع والطلبات"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_chat_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_chat_reports
+msgid "Group for Scheduled Reports"
+msgstr "مجموعة التقارير المجدولة"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_chat_summary
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_chat_summary
+msgid "Group for Summaries"
+msgstr "مجموعة الملخصات"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "How to Setup"
+msgstr "طريقة الإعداد"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__id
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__id
+msgid "ID"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__include_payment_summary
+msgid "Include Payment Summary"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__include_top_products
+msgid "Include Top Products"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Invalid bot token"
+msgstr "توكن البوت غير صالح"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__summary_type__invoices
+msgid "Invoices Summary"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__pnl_period__last_month
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__date_range_type__last_month
+msgid "Last Month"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__last_sent
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__last_sent
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+msgid "Last Sent"
+msgstr "آخر إرسال"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__write_uid
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__write_date
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__date_range_type__last_week
+msgid "Last Week"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_daily_summary__chat_id
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Leave empty for default"
+msgstr ""
+
+#. module: telegram_reports
 #: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__limit_records
 msgid "Limit Records"
 msgstr "حد السجلات"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_company__telegram_order_now_time
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_order_now_time
+msgid ""
+"Local time (24-hour) to send the list; only sent when something is to order."
+msgstr "الوقت المحلي (نظام 24 ساعة) لإرسال القائمة، ولا تُرسل إلا إذا كان هناك ما يجب طلبه."
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__manual
+msgid "Manual Only"
+msgstr "يدوي فقط"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__limit_records
+msgid "Maximum number of records to include. 0 for no limit."
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__model_id
+msgid "Model"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_day_of_week__0
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__0
+msgid "Monday"
+msgstr "الإثنين"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_frequency__monthly
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__monthly
+msgid "Monthly"
+msgstr "شهري"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__name
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__name
+msgid "Name"
+msgstr "الاسم"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__next_scheduled
+msgid "Next Scheduled"
+msgstr "الموعد التالي"
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "No Telegram chat to reply in."
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "No chat ID configured. Go to Settings to configure it."
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid ""
+"No financial report template found. Please configure "
+"account.financial.report"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_report_schedule.py:0
+msgid "No records found matching the filter criteria."
+msgstr "لم يتم العثور على سجلات تطابق معايير التصفية."
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "No records to include in the report."
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_report_schedule.py:0
+msgid "No report selected for this schedule."
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/res_config_settings.py:0
+msgid "Nothing to order today: nothing was sent."
+msgstr "لا يوجد ما يجب طلبه اليوم، لم يُرسل شيء."
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__top_products_count
+msgid "Number of Top Products"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_company__telegram_enabled
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_enabled
+msgid ""
+"Off: alerts only go to the DoniaLink App. On: also to the Telegram groups "
+"below, with the bot token."
+msgstr "عند الإيقاف تصل التنبيهات إلى تطبيق دنيا لينك فقط. عند التفعيل تصل أيضاً إلى مجموعات تيليجرام أدناه باستخدام توكن البوت."
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid ""
+"Once a day, the ingredients at or below their reorder point (Recipe "
+"Costing), by supplier: quantity to order in the purchase unit, stock on "
+"hand, days left. Sent only when something is to order."
+msgstr "مرة يومياً: المواد التي وصلت إلى حد إعادة الطلب أو أقل (تكلفة الوصفات) حسب المورّد: الكمية المطلوبة بوحدة الشراء، والمخزون الحالي، والأيام المتبقية. لا تُرسل إلا إذا كان هناك ما يجب طلبه."
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Open Telegram and search for @BotFather"
+msgstr "افتح تيليجرام وابحث عن @BotFather"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+msgid "Options"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/res_config_settings.py:0
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Order Now"
+msgstr "اطلب الآن"
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_order_now.py:0
+msgid "Order Now needs Recipe Costing 18.0.4.8.0 or later."
+msgstr ""
+
+#. module: telegram_reports
+#: model:donialink.app.kind,name:telegram_reports.kind_order_now
+msgid "Order now (stock)"
+msgstr "اطلب الآن (المخزون)"
+
+#. module: telegram_reports
+#: model:donialink.app.kind,description:telegram_reports.kind_pos_order_alert
+msgid "Orders cancelled, or open orders reduced, with the reason"
+msgstr "الطلبات الملغاة أو المفتوحة التي نُقصت، مع السبب"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__pnl_period
+msgid "P&L Period"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "POS Sale Details report not found"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__summary_type__pos
+msgid "POS Sales Summary"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "POS Session Close"
+msgstr "إغلاق جلسة نقطة البيع"
+
+#. module: telegram_reports
+#: model:donialink.app.kind,name:telegram_reports.kind_pos_session
+msgid "POS session closed"
+msgstr "إغلاق جلسة نقطة البيع"
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "طلبات نقطة البيع "
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_pos_session
+msgid "Point of Sale Session"
+msgstr "جلسة نقطة البيع"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__summary_type__pnl
+msgid "Profit & Loss Summary"
+msgstr ""
+
+#. module: telegram_reports
+#: model:donialink.app.kind,description:telegram_reports.kind_finance_summary
+msgid "Profit and loss and financial reports"
+msgstr "الأرباح والخسائر والتقارير المالية"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Record Filter"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__report_mode__records
+msgid "Record-based (select records by domain)"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__report_mode
+msgid ""
+"Record-based: Select records using domain filter.\n"
+"Financial Report: Use date range for accounting reports."
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__report_id
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_search
+msgid "Report"
+msgstr "التقرير"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Report Configuration"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__report_mode
+msgid "Report Mode"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Report Schedule"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.actions.act_window,name:telegram_reports.telegram_report_schedule_action
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_schedules
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Report Schedules"
+msgstr "جدولة التقارير"
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Report not found: %s"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_report_schedule.py:0
+msgid "Report sent successfully to Telegram!"
+msgstr "تم إرسال التقرير بنجاح إلى تيليجرام!"
+
+#. module: telegram_reports
+#: model:donialink.app.kind,description:telegram_reports.kind_scheduled_report
+msgid "Reports sent on a schedule from Odoo"
+msgstr "تقارير تُرسل من أودو حسب جدول"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__summary_type__sales
+msgid "Sales Orders Summary"
+msgstr ""
+
+#. module: telegram_reports
+#: model:donialink.app.kind,description:telegram_reports.kind_daily_summary
+msgid "Sales summary of the day"
+msgstr "ملخص مبيعات اليوم"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_day_of_week__5
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__5
+msgid "Saturday"
+msgstr "السبت"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_type
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Schedule"
+msgstr "الجدولة"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_search
+msgid "Schedule Type"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Schedule any Odoo report to be sent automatically"
+msgstr "جدولة أي تقرير من أودو ليُرسل تلقائياً"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_search
+msgid "Scheduled"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_report_count
+msgid "Scheduled Reports"
+msgstr "التقارير المجدولة"
+
+#. module: telegram_reports
+#: model:ir.actions.act_window,name:telegram_reports.telegram_daily_summary_action
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_daily
+msgid "Scheduled Summaries"
+msgstr ""
+
+#. module: telegram_reports
+#: model:donialink.app.kind,name:telegram_reports.kind_scheduled_report
+msgid "Scheduled reports"
+msgstr "التقارير المجدولة"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_search
+msgid "Search Schedules"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Select P&L, Balance Sheet, etc."
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__report_id
+msgid "Select the report to send"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__account_report_id
+msgid ""
+"Select the type of financial report (e.g., Profit and Loss, Balance Sheet)"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Send /newbot and follow the instructions"
+msgstr "أرسل /newbot واتبع التعليمات"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__send_count
+msgid "Send Count"
+msgstr "عدد مرات الإرسال"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Send Now"
+msgstr "إرسال الآن"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__schedule_time
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__schedule_time
+msgid "Send Time"
+msgstr "وقت الإرسال"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Send a message to the bot/group"
+msgstr "أرسل رسالة إلى البوت أو المجموعة"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Send at"
+msgstr "وقت الإرسال"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Send automatic daily sales summaries"
+msgstr "إرسال ملخصات المبيعات اليومية تلقائياً"
+
+#. module: telegram_reports
+#: model_terms:ir.actions.act_window,help:telegram_reports.telegram_daily_summary_action
+msgid ""
+"Send automatic summaries to Telegram: POS sales, orders, invoices, or Profit &amp; Loss reports.\n"
+"                Schedule daily, weekly, or monthly."
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Send now"
+msgstr "أرسل الآن"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Send on Session Close"
+msgstr "الإرسال عند إغلاق الجلسة"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.pos_session_view_form_inherit_telegram
+msgid "Send to Telegram"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/res_config_settings.py:0
+msgid "Sent to Telegram."
+msgstr "تم الإرسال إلى تيليجرام."
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__sequence
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_report_schedule__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_company__telegram_chat_pos
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_chat_pos
+msgid ""
+"Session closing reports, cancelled and edited orders. Empty: the main group."
+msgstr "تقارير إغلاق الجلسات والطلبات الملغاة والمعدّلة. فارغ: المجموعة الرئيسية."
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/pos_session.py:0
+msgid "Session summary sent to Telegram!"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.actions.act_window,name:telegram_reports.telegram_reports_config_action
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_settings
+msgid "Settings"
+msgstr "الإعدادات"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Setup Instructions"
+msgstr "تعليمات الإعداد"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__chat_id
+msgid "Specific chat ID for this report. Leave empty to use default."
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Statistics"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/pos_session.py:0
+#: code:addons/telegram_reports/models/res_config_settings.py:0
+#: code:addons/telegram_reports/models/telegram_daily_summary.py:0
+#: code:addons/telegram_reports/models/telegram_report_schedule.py:0
+msgid "Success"
+msgstr "تم بنجاح"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+msgid "Summary Configuration"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_telegram_daily_summary__summary_type
+msgid "Summary Type"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_daily_summary.py:0
+msgid "Summary sent to Telegram!"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_day_of_week__6
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__6
+msgid "Sunday"
+msgstr "الأحد"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+msgid "Telegram"
+msgstr "تيليجرام"
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Telegram API error: %s"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_bot_token
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_bot_token
+msgid "Telegram Bot Token"
+msgstr "توكن البوت"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_res_config_settings__telegram_bot_token
+msgid "Telegram Bot Token from @BotFather"
+msgstr "توكن بوت تيليجرام من @BotFather"
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/res_config_settings.py:0
+msgid "Telegram Daily Summaries"
+msgstr "ملخصات تيليجرام اليومية"
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_telegram_daily_summary
+msgid "Telegram Daily Summary"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_default_chat_id
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_default_chat_id
+msgid "Telegram Group"
+msgstr "معرف المحادثة الافتراضي"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_order_now_available
+msgid "Telegram Order Now Available"
+msgstr "قائمة «اطلب الآن» متاحة"
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_telegram_order_now
+msgid "Telegram Order Now List"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_telegram_report_schedule
+msgid "Telegram Report Schedule"
+msgstr "جدولة تقارير تيليجرام"
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/res_config_settings.py:0
+msgid "Telegram Report Schedules"
+msgstr "جدولة تقارير تيليجرام"
+
+#. module: telegram_reports
+#: model:ir.ui.menu,name:telegram_reports.telegram_reports_menu_root
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Telegram Reports"
+msgstr "تقارير تيليجرام"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_pos_session__telegram_sent
+msgid "Telegram Sent"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model,name:telegram_reports.model_telegram_service
+msgid "Telegram Service"
+msgstr "خدمة تيليجرام"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "Telegram Settings"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Telegram bot token not configured. Go to Settings to configure it."
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid "Telegram connection failed: %s"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.actions.server,name:telegram_reports.ir_cron_telegram_order_now_ir_actions_server
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_order_now
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_order_now
+msgid "Telegram: Daily Order Now List"
+msgstr "تيليجرام: قائمة «اطلب الآن» اليومية"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_pos_close_top_products
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_pos_close_top_products
+msgid "Telegram: Include Top Products"
+msgstr "تيليجرام: إظهار الأكثر مبيعاً"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_order_now_last
+msgid "Telegram: Order Now Last Sent"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_order_now_time
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_order_now_time
+msgid "Telegram: Order Now Time"
+msgstr "تيليجرام: وقت «اطلب الآن»"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_send_on_order_cancel
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_send_on_order_cancel
+msgid "Telegram: Send Cancelled Orders"
+msgstr "تيليجرام: إرسال الطلبات الملغاة"
+
+#. module: telegram_reports
+#: model:ir.actions.server,name:telegram_reports.ir_cron_telegram_send_daily_summaries_ir_actions_server
+msgid "Telegram: Send Daily Summaries"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_pos_close_send_pdf
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_pos_close_send_pdf
+msgid "Telegram: Send PDF Report"
+msgstr "تيليجرام: إرسال تقرير PDF"
+
+#. module: telegram_reports
+#: model:ir.actions.server,name:telegram_reports.ir_cron_telegram_send_scheduled_reports_ir_actions_server
+msgid "Telegram: Send Scheduled Reports"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_send_on_pos_close
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_send_on_pos_close
+msgid "Telegram: Send on POS Session Close"
+msgstr "تيليجرام: الإرسال عند إغلاق جلسة نقطة البيع"
+
+#. module: telegram_reports
+#: model:ir.model.fields,field_description:telegram_reports.field_res_company__telegram_pos_close_top_count
+#: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_pos_close_top_count
+msgid "Telegram: Top Products Count"
+msgstr "تيليجرام: عدد المنتجات الأكثر مبيعاً"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Test"
+msgstr "اختبار"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_daily_summary__company_id
+msgid "The figures are this company's, sent with its Telegram settings."
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__company_id
+msgid "The report is this company's, sent with its Telegram settings."
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__date_range_type__this_month
+msgid "This Month"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__date_range_type__this_week
+msgid "This Week"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__date_range_type__this_year
+msgid "This Year"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_day_of_week__3
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__3
+msgid "Thursday"
+msgstr "الخميس"
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_daily_summary__schedule_time
+msgid "Time to send summary (24-hour format)"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields,help:telegram_reports.field_telegram_report_schedule__schedule_time
+msgid "Time to send the report (24-hour format, e.g., 9.5 for 9:30 AM)"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__date_range_type__today
+msgid "Today"
+msgstr ""
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_day_of_week__1
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__1
+msgid "Tuesday"
+msgstr "الثلاثاء"
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "Visit: https://api.telegram.org/bot[TOKEN]/getUpdates"
+msgstr "افتح: https://api.telegram.org/bot[TOKEN]/getUpdates"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_day_of_week__2
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__2
+msgid "Wednesday"
+msgstr "الأربعاء"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_daily_summary__schedule_frequency__weekly
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_type__weekly
+msgid "Weekly"
+msgstr "أسبوعي"
+
+#. module: telegram_reports
+#: model:donialink.app.kind,description:telegram_reports.kind_order_now
+msgid "What to order from suppliers"
+msgstr "ما يجب طلبه من الموردين"
+
+#. module: telegram_reports
+#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__date_range_type__yesterday
+msgid "Yesterday"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.res_config_settings_view_form_telegram
+msgid "active"
+msgstr ""
+
+#. module: telegram_reports
+#. odoo-python
+#: code:addons/telegram_reports/models/telegram_service.py:0
+msgid ""
+"base_accounting_kit module not installed or financial.report model not found"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_daily_summary_view_form
+msgid "e.g. Daily POS Summary"
+msgstr ""
+
+#. module: telegram_reports
+#: model_terms:ir.ui.view,arch_db:telegram_reports.telegram_report_schedule_view_form
+msgid "e.g. Daily Sales Report"
+msgstr ""
 
 #. module: telegram_reports
 #: model:ir.model.fields,field_description:telegram_reports.field_res_config_settings__telegram_bot_token
@@ -141,80 +1267,9 @@ msgid "Default Chat ID"
 msgstr "معرف المحادثة الافتراضي"
 
 #. module: telegram_reports
-msgid "Send Now"
-msgstr "إرسال الآن"
-
-#. module: telegram_reports
 msgid "Test Connection"
 msgstr "اختبار الاتصال"
 
 #. module: telegram_reports
 msgid "Configure Scheduled Reports"
 msgstr "إعداد التقارير المجدولة"
-
-#. module: telegram_reports
-msgid "Success"
-msgstr "نجاح"
-
-#. module: telegram_reports
-msgid "Report sent successfully to Telegram!"
-msgstr "تم إرسال التقرير بنجاح إلى تيليجرام!"
-
-#. module: telegram_reports
-msgid "No records found matching the filter criteria."
-msgstr "لم يتم العثور على سجلات تطابق معايير التصفية."
-
-#. module: telegram_reports
-msgid "Failed to send report. Check Telegram configuration."
-msgstr "فشل إرسال التقرير. تحقق من إعدادات تيليجرام."
-
-#. module: telegram_reports
-msgid "Bot token not configured"
-msgstr "لم يتم إعداد توكن البوت"
-
-#. module: telegram_reports
-msgid "Chat ID not configured"
-msgstr "لم يتم إعداد معرف المحادثة"
-
-#. module: telegram_reports
-msgid "Invalid bot token"
-msgstr "توكن البوت غير صالح"
-
-#. module: telegram_reports
-msgid "Connected successfully! Bot: @%s"
-msgstr "تم الاتصال بنجاح! البوت: @%s"
-
-#. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__0
-msgid "Monday"
-msgstr "الإثنين"
-
-#. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__1
-msgid "Tuesday"
-msgstr "الثلاثاء"
-
-#. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__2
-msgid "Wednesday"
-msgstr "الأربعاء"
-
-#. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__3
-msgid "Thursday"
-msgstr "الخميس"
-
-#. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__4
-msgid "Friday"
-msgstr "الجمعة"
-
-#. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__5
-msgid "Saturday"
-msgstr "السبت"
-
-#. module: telegram_reports
-#: model:ir.model.fields.selection,name:telegram_reports.selection__telegram_report_schedule__schedule_day_of_week__6
-msgid "Sunday"
-msgstr "الأحد"

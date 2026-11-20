@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Telegram Reports',
-    'version': '18.0.2.6.0',
+    'version': '18.0.2.8.1',
     'category': 'Tools',
     'summary': 'Automatic report sending via Telegram',
     'description': """
@@ -28,6 +28,10 @@ Features | المميزات:
 * Send text messages and custom files
   إرسال رسائل نصية وملفات مخصصة
 
+* Every alert lands in the DoniaLink App (/dl/app), one notification kind per alert type;
+  Telegram is optional ("Also send to Telegram"), through the company's own bot
+  كل تنبيه يصل إلى تطبيق دنيا لينك، وتيليجرام اختياري عبر بوت الشركة
+
 Setup | الإعداد:
 ----------------
 1. Create a Telegram Bot via @BotFather
@@ -51,6 +55,7 @@ Developed by Yousif Shakir | تطوير يوسف شاكر
         'base',
         'mail',
         'point_of_sale',
+        'donialink_app',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -61,6 +66,7 @@ Developed by Yousif Shakir | تطوير يوسف شاكر
         'views/pos_session_views.xml',
         'views/telegram_menus.xml',
         'data/ir_cron_data.xml',
+        'data/dl_app_kind_data.xml',
     ],
     'external_dependencies': {
         'python': ['requests'],
