@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Telegram Reports',
-    'version': '18.0.2.8.1',
+    'version': '18.0.2.9.0',
     'category': 'Tools',
     'summary': 'Automatic report sending via Telegram',
     'description': """

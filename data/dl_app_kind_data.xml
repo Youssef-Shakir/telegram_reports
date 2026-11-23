@@ -15,6 +15,14 @@
         <field name="icon">alert</field>
         <field name="sequence">21</field>
     </record>
+    <record id="kind_printer_alert" model="donialink.app.kind">
+        <field name="code">printer_alert</field>
+        <field name="name">Printer offline</field>
+        <field name="description">A kitchen or bar printer did not print a ticket (offline or failed)</field>
+        <field name="icon">alert</field>
+        <field name="sequence">21</field>
+    </record>
+    <function model="donialink.app.kind" name="_dl_printer_kind_recipients"/>
     <record id="kind_daily_summary" model="donialink.app.kind">
         <field name="code">daily_summary</field>
         <field name="name">Daily summary</field>

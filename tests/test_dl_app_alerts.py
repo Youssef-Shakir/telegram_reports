@@ -22,7 +22,7 @@ class TestDlAppAlerts(TransactionCase):
         cls.Kind = cls.env['donialink.app.kind']
         cls.Message = cls.env['donialink.app.message']
         for code in ('daily_summary', 'pos_session', 'pos_order_alert'):
-            cls.Kind._get(code).recipient_ids = cls.manager
+            cls.Kind._get(code).write({'recipient_ids': [(6, 0, cls.manager.ids)], 'recipient_group_ids': [(5, 0, 0)], 'role_ids': [(5, 0, 0)]})
 
     def setUp(self):
         super().setUp()
@@ -33,7 +33,7 @@ class TestDlAppAlerts(TransactionCase):
         self.addCleanup(patcher.stop)
 
     def _messages(self, kind):
-        return self.Message.search([('kind_code', '=', kind)])
+        return self.Message.search([('kind_code', '=', kind), ('user_id', '=', self.manager.id)])
 
     def _service(self, kind):
         return self.env['telegram.service'].with_company(self.company).with_context(telegram_kind=kind)

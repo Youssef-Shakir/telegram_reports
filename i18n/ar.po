@@ -1273,3 +1273,13 @@ msgstr "اختبار الاتصال"
 #. module: telegram_reports
 msgid "Configure Scheduled Reports"
 msgstr "إعداد التقارير المجدولة"
+
+#. module: telegram_reports
+#: model:donialink.app.kind,name:telegram_reports.kind_printer_alert
+msgid "Printer offline"
+msgstr "الطابعة غير متصلة"
+
+#. module: telegram_reports
+#: model:donialink.app.kind,description:telegram_reports.kind_printer_alert
+msgid "A kitchen or bar printer did not print a ticket (offline or failed)"
+msgstr "طابعة المطبخ أو البار لم تطبع تذكرة (غير متصلة أو فشلت)"

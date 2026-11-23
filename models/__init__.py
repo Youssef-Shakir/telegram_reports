@@ -8,3 +8,4 @@ from . import pos_order
 from . import res_config_settings
 from . import telegram_order_now
 from . import dl_app_alerts
+from . import dl_app_cards
