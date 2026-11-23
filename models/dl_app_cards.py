@@ -105,6 +105,9 @@ class PosSession(models.Model):
         cash_in = sum(a for _label, a in moves if a > 0)
         difference = (self.cash_register_balance_end_real - self.cash_register_balance_end) if cash_control else 0.0
         no_difference = currency.is_zero(difference)
+        # card terminal closing (expense_cash_control, when installed): expected, counted, difference
+        has_card = 'card_difference' in self._fields and self.has_card_methods
+        card_diff = self.card_difference if has_card else 0.0
 
         lead = [f"المبيعات {money(sales)}", f"{count} طلب"]
         if discount_total:
@@ -113,6 +116,8 @@ class PosSession(models.Model):
             lead.append(f"مصاريف {money(cash_out)}")
         if cash_control and not no_difference:
             lead.append(f"{'عجز' if difference < 0 else 'زيادة'} {money(abs(difference))}")
+        if has_card and not currency.is_zero(card_diff):
+            lead.append(f"{'عجز البطاقة' if card_diff < 0 else 'زيادة البطاقة'} {money(abs(card_diff))}")
 
         tiles = [('المبيعات', money(sales), ''), ('الطلبات', str(count), ''),
                  ('المتوسط', money(sales / count) if count else '—', ''),
@@ -121,6 +126,10 @@ class PosSession(models.Model):
             tiles.append(('المصاريف', money(cash_out), 'neg' if cash_out else ''))
             tiles.append(('فرق الصندوق', 'لا يوجد', 'pos') if no_difference else
                          ('عجز' if difference < 0 else 'زيادة', money(abs(difference)), 'neg' if difference < 0 else 'pos'))
+        if has_card:
+            tiles.append(('فرق البطاقة', 'لا يوجد', 'pos') if currency.is_zero(card_diff) else
+                         ('عجز البطاقة' if card_diff < 0 else 'زيادة البطاقة', money(abs(card_diff)),
+                          'neg' if card_diff < 0 else 'pos'))
 
         payments = {}
         for payment in orders.payment_ids:
@@ -143,6 +152,17 @@ class PosSession(models.Model):
             foot = (['✅ لا يوجد فرق', ('0', 'num pos')] if no_difference else
                     ['🔴 عجز' if difference < 0 else '🟢 زيادة', signed(money, difference)])
             drawer_html = section('💵 الصندوق', table(None, rows, foot=foot))
+        if has_card:
+            foot = (['✅ لا يوجد فرق', ('0', 'num pos')] if currency.is_zero(card_diff) else
+                    ['🔴 عجز' if card_diff < 0 else '🟢 زيادة', signed(money, card_diff)])
+            drawer_html += section('💳 جهاز البطاقة', table(None, [
+                ['المتوقع', (esc(money(self.card_expected_total)), 'num')],
+                ['المعدود', (esc(money(self.card_counted_total)), 'num')]], foot=foot))
+            if cash_control and not currency.is_zero(card_diff) and not no_difference:
+                net = self.total_difference
+                note = ' (فرقان باتجاهين معاكسين: ربما طلب نقدي سُجّل بطاقة أو العكس)' if self.differences_offset else ''
+                drawer_html += (f'<p class="dl-rep-note">صافي الفرق (الصندوق + البطاقة): '
+                                f'{esc(("+" if net > 0 else "−" if net < 0 else "") + money(abs(net)))}{esc(note)}</p>')
 
         movements = self._dl_app_movements(orders, discounts)
         movements_html = section(f'🧭 حركات الجلسة ({len(movements)})', table(
